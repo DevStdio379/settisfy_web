@@ -101,14 +101,22 @@ const BookingDetails = () => {
               }`}>
               {booking.status}
             </span>
-            <Button
+            <div className="ms-auto d-flex gap-2">
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => { if (id) navigate(`/dashboards/bookings/${id}/timeline`) }}
+              >
+                Timeline
+              </Button>
+              <Button
               variant="outline-secondary"
               size="sm"
-              className="ms-auto"
               onClick={() => navigate('/dashboards/bookings')}
-            >
+              >
               Back to List
-            </Button>
+              </Button>
+            </div>
           </Stack>
         </Card.Header>
         <Card.Body>

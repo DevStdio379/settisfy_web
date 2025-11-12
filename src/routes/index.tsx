@@ -5,6 +5,7 @@ import { Route, RouteProps } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
 import Bookings from './../views/dashboards/Bookings'
 import BookingDetails from './../views/dashboards/BookingDetails'
+import BookingTimeline from '@/views/dashboards/BookingTimeline'
 
 // Dashboards
 const Ecommerce = React.lazy(() => import('./../views/dashboards'))
@@ -226,19 +227,13 @@ const dashboardRoutes: RoutesProps = {
       name: 'Booking Details',
       element: <BookingDetails />,
       route: PrivateRoute,
+    },
+    {
+      path: '/dashboards/bookings/:id/timeline',
+      name: 'Booking Timeline',
+      element: <BookingTimeline />,
+      route: PrivateRoute,
     }
-    // {
-    //   path: '/dashboards/analytics',
-    //   name: 'Analytics',
-    //   element: <Analytics />,
-    //   route: PrivateRoute,
-    // },
-    // {
-    //   path: '/dashboards/crm',
-    //   name: 'CRM',
-    //   element: <CRM />,
-    //   route: PrivateRoute,
-    // },
   ],
 }
 
