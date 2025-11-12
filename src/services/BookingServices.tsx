@@ -206,3 +206,17 @@ export async function fetchBookingById(bookingId: string): Promise<Booking | nul
     return null
   }
 }
+
+export async function updateBooking(
+  bookingId: string,
+  updates: Partial<Booking>
+): Promise<void> {
+  try {
+    const bookingRef = doc(db, "bookings", bookingId)
+    const { updateDoc } = await import("firebase/firestore")
+    await updateDoc(bookingRef, updates)
+  } catch (error) {
+    console.error("Error updating booking:", error)
+    throw error
+  }
+}

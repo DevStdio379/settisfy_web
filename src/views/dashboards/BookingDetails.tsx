@@ -1,12 +1,14 @@
 import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton'
 import { Button, Card, Col, Row, Stack, Table } from 'react-bootstrap'
 import type { AcceptorsWithDetails, Booking } from "../../services/BookingServices"
-import { BookingActivityType, fetchBookingById } from "../../services/BookingServices"
+import { BookingActivityType, fetchBookingById, updateBooking } from "../../services/BookingServices"
+import type { BookingStatus } from "@/utils/status"
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import Avatar from '@/components/UiElements/Base/Avatars/Avatar'
 import { fetchListOfUsers, fetchSelectedUser, User } from '@/services/UserServices'
 import { fetchListOfSettlerServices, SettlerService } from '@/services/SettlerServiceServices'
+import { getStatusBadgeClass, getStatusLabel } from '@/utils/status'
 
 const BookingDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -14,8 +16,6 @@ const BookingDetails = () => {
   const [booking, setBooking] = useState<Booking>()
   const [acceptors, setAcceptors] = useState<AcceptorsWithDetails[]>()
   const [customer, setCustomer] = useState<User>()
-  const [acceptedSettler, setAcceptedSettler] = useState<User>()
-  const [acceptedService, setAcceptedService] = useState<SettlerService>()
   const [loading, setLoading] = useState(true)
 
 
@@ -54,23 +54,6 @@ const BookingDetails = () => {
                 service: serviceDetails
               }
             }) || [])
-
-            // set settler details
-            if (data?.settlerId && listOfAcceptors.some(settler => settler.uid === data.settlerId)) {
-              const settlerDetails = listOfAcceptors.find(settler => settler.uid === data.settlerId)
-              if (settlerDetails) {
-                setAcceptedSettler(settlerDetails)
-              }
-            }
-
-            // set service details
-            if (data?.acceptors && data.acceptors.length > 0) {
-              const acceptedServiceId = data.acceptors[0].settlerServiceId
-              const serviceDetails = listOfSettlerServices.find(service => service.id === acceptedServiceId)
-              if (serviceDetails) {
-                setAcceptedService(serviceDetails)
-              }
-            }
           }
         } catch (error) {
           console.error('Error fetching booking:', error)
@@ -92,14 +75,9 @@ const BookingDetails = () => {
       <Card className="shadow-sm border-0">
         <Card.Header className="bg-white border-bottom-0">
           <Stack direction="horizontal" gap={3}>
-            <h4 className="mb-0 fw-semibold">#{booking.id} | {booking.catalogueService.title}</h4>
-            <span className={`badge ${booking.status === 'completed' ? 'bg-success' :
-              booking.status === 'cancelled' ? 'bg-danger' :
-                booking.status === 'pending' ? 'bg-warning' :
-                  booking.status === 'confirmed' ? 'bg-info' :
-                    'bg-secondary'
-              }`}>
-              {booking.status}
+            <h5 className="mb-0 fw-semibold">#{booking.id} | {booking.catalogueService.title}</h5>
+            <span className={`badge ${getStatusBadgeClass(booking.status as BookingStatus)}`}>
+              {getStatusLabel(booking.status as BookingStatus)}
             </span>
             <div className="ms-auto d-flex gap-2">
               <Button
@@ -120,26 +98,105 @@ const BookingDetails = () => {
           </Stack>
         </Card.Header>
         <Card.Body>
+          {/* Action Buttons */}
+          <Row className="mb-4">
+            <Col>
+              {booking.status === 0.1 && (
+                <Card className="border-0 shadow-sm" style={{ backgroundColor: '#dc354515' }}>
+                  <Card.Body className="p-3">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="ri-alert-line text-danger" style={{ fontSize: '24px' }}></i>
+                        <div>
+                          <h6 className="mb-1 fw-semibold">Action Required</h6>
+                          <p className="mb-0 text-muted small">Review and validate this booking details & proof of payment. Once approved, this booking will be broadcasted.</p>
+                        </div>
+                      </div>
+                      <div className="d-flex gap-2">
+                        <Button
+                          variant="success"
+                          size="sm"
+                          disabled={loading}
+                          onClick={async () => {
+                            setLoading(true)
+                            try {
+                              await updateBooking(booking.id!, { status: 0 })
+                              window.location.reload()
+                            } catch (error) {
+                              console.error('Error updating booking:', error)
+                              setLoading(false)
+                            }
+                          }}
+                        >
+                          <i className="ri-check-line me-1"></i>
+                          {loading ? 'Submitting...' : 'Valid Booking'}
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => console.log('Invalidate booking:', booking.id)}
+                        >
+                          <i className="ri-close-line me-1"></i>
+                          Invalid Booking
+                        </Button>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              )}
+            </Col>
+          </Row>
           {/* Customer & Booking Info */}
           <Row className="g-4 mb-4">
             <Col md={6}>
               <Card className="h-100 shadow-sm border-0 bg-light-subtle">
                 <Card.Body>
                   <h5 className="fw-semibold mb-3">Booking Information</h5>
-                  <div className="d-flex flex-column gap-3">
-                    <div>
-                      <label className="text-muted small fw-bold">Name:</label>
-                      <div className="form-control-plaintext">{customer?.firstName} {customer?.lastName}</div>
-                    </div>
-                    <div>
-                      <label className="text-muted small fw-bold">Email:</label>
-                      <div className="form-control-plaintext">{customer?.email}</div>
-                    </div>
-                    <div>
-                      <label className="text-muted small fw-bold">Address:</label>
-                      <div className="form-control-plaintext">{booking.selectedAddress.fullAddress || '-'}</div>
-                    </div>
-                  </div>
+                  <Row>
+                    <Col md={6}>
+                      <div className="d-flex flex-column gap-3">
+                        <div>
+                          <label className="text-muted fs-6 fw-bold">Customer Name:</label>
+                          <div className="fw-medium">{customer?.firstName} {customer?.lastName}</div>
+                        </div>
+                        <div>
+                          <label className="text-muted fs-6 fw-bold">Email:</label>
+                          <div className="fw-medium">{customer?.email}</div>
+                        </div>
+                        <div>
+                          <label className="text-muted fs-6 fw-bold">Service Address:</label>
+                          <div className="fw-medium">{booking.selectedAddress.fullAddress || '-'}</div>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md={6} className="border-start border-2" style={{ borderColor: '#495057 !important' }}>
+                      <div>
+                        <label className="text-muted fs-6 mb-2 fw-bold">Proof of Payment:</label>
+                        {booking.paymentEvidence && booking.paymentEvidence.length > 0 ? (
+                          <div className="d-flex gap-2 flex-wrap">
+                            {booking.paymentEvidence.map((url, idx) => (
+                              <a key={idx} href={url} target="_blank" rel="noopener noreferrer" title="Open full image">
+                                <img
+                                  src={url}
+                                  alt={`Payment Evidence ${idx + 1}`}
+                                  style={{
+                                    width: '150px',
+                                    height: '150px',
+                                    objectFit: 'cover',
+                                    borderRadius: '6px',
+                                    border: '1px solid #dee2e6',
+                                    cursor: 'pointer'
+                                  }}
+                                />
+                              </a>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-muted">No payment evidence provided</div>
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
                 </Card.Body>
               </Card>
             </Col>
@@ -166,6 +223,7 @@ const BookingDetails = () => {
                       </div>
                     </div>
                   ) : null}
+                  <h6 className="fw-semibold mb-3">Notes to Service Provider</h6>
                   <div className="form-control" style={{ minHeight: '60px', backgroundColor: '#f8f9fa', cursor: 'default', fontSize: '0.875rem' }}>
                     {booking.notesToSettler || <span className="text-muted">No notes provided</span>}
                   </div>
@@ -254,10 +312,20 @@ const BookingDetails = () => {
                       </div>
                     </div>
                   ) : null}
-                  <h6 className="fw-semibold mb-2">Completion Remark:</h6>
-                  <div className="form-control" style={{ minHeight: '80px', backgroundColor: '#f8f9fa', cursor: 'default', fontSize: '0.875rem' }}>
-                    {booking.settlerEvidenceRemark || <span className="text-muted">No remark provided</span>}
-                  </div>
+
+                  {/* if no completion remark exist */}
+                  {!booking.settlerEvidenceRemark && booking.settlerEvidenceRemark !== '' && (
+                    <div className="form-control" style={{ minHeight: '80px', backgroundColor: '#f8f9fa', cursor: 'default', fontSize: '0.875rem' }}>
+                      {booking.settlerEvidenceRemark || <span className="text-muted">No remark provided</span>}
+                    </div>
+                  )}
+                  {/* if no incompletion report */}
+                  {booking.settlerEvidenceImageUrls.length === 0 && booking.settlerEvidenceRemark === '' && (
+                    <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '200px' }}>
+                      <i className="ri-checkbox-circle-line text-success" style={{ fontSize: '48px' }}></i>
+                      <p className="text-muted mt-2 mb-0">No service completion evidence provided</p>
+                    </div>
+                  )}
                 </Card.Body>
               </Card>
             </Col>

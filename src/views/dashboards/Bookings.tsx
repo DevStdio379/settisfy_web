@@ -5,6 +5,7 @@ import { fetchBookingsWithUsers } from "../../services/BookingServices"
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Avatar from '@/components/UiElements/Base/Avatars/Avatar'
+import { BookingStatus, getStatusBadgeClass, getStatusLabel } from '@/utils/status'
 
 const Bookings = () => {
   const [bookings, setBookings] = useState<BookingWithUsers[]>([])
@@ -94,20 +95,20 @@ const Bookings = () => {
                 </span>
               </td>
               <td>
-                <span className="text-muted">
-                  {booking.status}
+                <span className={`badge ${getStatusBadgeClass(booking.status as BookingStatus)}`}>
+                  {getStatusLabel(booking.status as BookingStatus)}
                 </span>
               </td>
               <td>
                 TBC
               </td>
-                <td className="text-end">
+              <td className="text-end">
                 <Link to={`/dashboards/bookings/${booking.id}`}>
                   <Button variant="primary">
                     View
                   </Button>
                 </Link>
-                </td>
+              </td>
             </tr>
           ))}
         </tbody>
