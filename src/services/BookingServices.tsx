@@ -3,6 +3,7 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import { db } from "./config"
 import { Address } from "./AddressServices";
 import { Catalogue, DynamicOption } from "./CatalogueServices";
+import { fetchAllUsers, User } from "./UserServices";
 
 export interface Acceptor {
   settlerId: string;
@@ -75,6 +76,11 @@ export interface Booking {
   updatedAt: any;
 }
 
+export interface BookingWithUsers extends Booking {
+  customer?: User
+  settler?: User
+}
+
 export async function fetchBookings(): Promise<Booking[]> {
   const bookingsRef = collection(db, "bookings")
   
@@ -88,4 +94,30 @@ export async function fetchBookings(): Promise<Booking[]> {
   })) as Booking[]
 
   return bookings
+}
+
+
+export async function fetchBookingsWithUsers(): Promise<BookingWithUsers[]> {
+  try {
+    // Fetch both datasets in parallel
+    const [bookings, users] = await Promise.all([fetchBookings(), fetchAllUsers()])
+
+    // Create a quick lookup map of users
+    const userMap: Record<string, User> = {}
+    users.forEach(user => {
+      userMap[user.uid] = user
+    })
+
+    // Attach customer and settler to each booking
+    const bookingsWithUsers: BookingWithUsers[] = bookings.map(b => ({
+      ...b,
+      customer: userMap[b.userId],
+      settler: b.settlerId ? userMap[b.settlerId] : undefined,
+    }))
+
+    return bookingsWithUsers
+  } catch (error) {
+    console.error("Error fetching bookings with users:", error)
+    return []
+  }
 }
