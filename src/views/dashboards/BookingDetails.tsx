@@ -110,11 +110,11 @@ const BookingDetails = () => {
                 Timeline
               </Button>
               <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => navigate('/dashboards/bookings')}
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => navigate('/dashboards/bookings')}
               >
-              Back to List
+                Back to List
               </Button>
             </div>
           </Stack>
@@ -274,7 +274,7 @@ const BookingDetails = () => {
                       <thead>
                         <tr>
                           <th>Service Provider</th>
-                          <th>Service Profile</th>
+                          <th>Service ID</th>
                           <th>Location</th>
                           <th>Ratings</th>
                           <th>Action</th>
@@ -295,12 +295,15 @@ const BookingDetails = () => {
                               </div>
                             </td>
                             <td>
-                              <Link
-                                to={`/dashboards/settler-services/${acc.service?.id}`}
-                                className="text-decoration-underline text-primary d-flex align-items-center gap-1"
-                              >
-                                {acc.service?.id}
-                                <i className="ri-external-link-line"></i>
+                              <Link to={`/dashboards/settler-service/${acc.service?.id}`}>
+                                <Button
+                                  variant="link"
+                                  className="text-decoration-underline text-primary d-flex align-items-center gap-1 p-0"
+                                  onClick={() => navigate(`/profile/ServiceProfile/${acc.service?.id}`)}
+                                >
+                                  {acc.service?.id}
+                                  <i className="ri-external-link-line"></i>
+                                </Button>
                               </Link>
                             </td>
                             <td>{acc.service?.serviceLocation}</td>

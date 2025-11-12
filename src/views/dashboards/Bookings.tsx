@@ -32,6 +32,7 @@ const Bookings = () => {
             <th>Booked Service</th>
             <th>Total</th>
             <th>Status</th>
+            <th>Date</th>
             <th className="text-end">Action</th>
           </tr>
         </thead>
@@ -96,6 +97,9 @@ const Bookings = () => {
                 <span className="text-muted">
                   {booking.status}
                 </span>
+              </td>
+              <td>
+                TBC
               </td>
                 <td className="text-end">
                 <Link to={`/dashboards/bookings/${booking.id}`}>

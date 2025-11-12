@@ -6,6 +6,8 @@ import PrivateRoute from './PrivateRoute'
 import Bookings from './../views/dashboards/Bookings'
 import BookingDetails from './../views/dashboards/BookingDetails'
 import BookingTimeline from '@/views/dashboards/BookingTimeline'
+import SettlerServices from '@/views/dashboards/SettlerServices'
+import SettlerServiceProfile from '@/views/dashboards/SettlerServiceProfile'
 
 // Dashboards
 const Ecommerce = React.lazy(() => import('./../views/dashboards'))
@@ -232,6 +234,18 @@ const dashboardRoutes: RoutesProps = {
       path: '/dashboards/bookings/:id/timeline',
       name: 'Booking Timeline',
       element: <BookingTimeline />,
+      route: PrivateRoute,
+    },
+    {
+      path: '/dashboards/settler-services',
+      name: 'Settler Services',
+      element: <SettlerServices />,
+      route: PrivateRoute,
+    },
+    {
+      path: '/dashboards/settler-service/:id',
+      name: 'Settler Service Profile',
+      element: <SettlerServiceProfile />,
       route: PrivateRoute,
     }
   ],
