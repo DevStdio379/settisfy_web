@@ -44,3 +44,47 @@ export async function fetchAllUsers(): Promise<User[]> {
     return []
   }
 }
+
+export async function fetchListOfUsers(userIds: string[]): Promise<User[]> {
+    try {
+        if (userIds.length === 0) return []
+
+        const usersRef = collection(db, "users")
+        const snapshot = await getDocs(usersRef)
+        
+        const users: User[] = snapshot.docs
+            .filter(doc => userIds.includes(doc.id))
+            .map(doc => ({
+                uid: doc.id,
+                ...doc.data(),
+            })) as User[]
+
+        return users
+    } catch (error) {
+        console.error("Error fetching list of users:", error)
+        return []
+    }
+}
+
+export async function fetchSelectedUser(userId: string): Promise<User | null> {
+    try {
+        const usersRef = collection(db, "users")
+        const snapshot = await getDocs(usersRef)
+        
+        const userDoc = snapshot.docs.find(doc => doc.id === userId)
+        
+        if (!userDoc) {
+            return null
+        }
+
+        const user: User = {
+            uid: userDoc.id,
+            ...userDoc.data(),
+        } as User
+
+        return user
+    } catch (error) {
+        console.error("Error fetching selected user:", error)
+        return null
+    }
+}

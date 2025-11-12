@@ -30,7 +30,7 @@ const Navigation = () => {
           {/* Sidemenu */}
           <SideBarContent />
           {/* Sidemenu Card */}
-          <MenuCard />
+          {/* <MenuCard /> */}
         </SimpleBar>
       </aside>
     </>

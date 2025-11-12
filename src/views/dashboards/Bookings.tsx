@@ -21,11 +21,7 @@ const Bookings = () => {
 
   return (
     <>
-      <PageBreadcrumbButton
-        title="Service Bookings"
-        subName="Service Bookings"
-        url={'https://react-bootstrap.netlify.app/docs/components/table'}
-      />
+      <PageBreadcrumbButton title="Bookings" subName="Dashboard" />
       {/* Start:: Col */}
       <Table responsive hover className="mb-0">
         <thead>
@@ -101,11 +97,13 @@ const Bookings = () => {
                   {booking.status}
                 </span>
               </td>
-              <td className="text-end">
-                <Button variant="primary">
-                  View
-                </Button>
-              </td>
+                <td className="text-end">
+                <Link to={`/dashboards/bookings/${booking.id}`}>
+                  <Button variant="primary">
+                    View
+                  </Button>
+                </Link>
+                </td>
             </tr>
           ))}
         </tbody>

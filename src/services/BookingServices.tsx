@@ -1,9 +1,63 @@
 // src/firebase/bookings.ts
-import { collection, getDocs, query, orderBy } from "firebase/firestore"
+import { collection, getDocs, query, orderBy, getDoc, doc } from "firebase/firestore"
 import { db } from "./config"
 import { Address } from "./AddressServices";
 import { Catalogue, DynamicOption } from "./CatalogueServices";
 import { fetchAllUsers, User } from "./UserServices";
+import { SettlerService } from "./SettlerServiceServices";
+
+export enum BookingActivityType {
+
+  // booking process states
+  NOTES_TO_SETTLER_UPDATED = "NOTES_TO_SETTLER_UPDATED",
+  
+  // payment states
+  PAYMENT_APPROVED = "PAYMENT_APPROVED",
+  PAYMENT_REJECTED = "PAYMENT_REJECTED",
+
+  // initial booking state
+  QUOTE_CREATED = "QUOTE_CREATED",
+  SETTLER_ACCEPT = "SETTLER_ACCEPT",
+  SETTLER_SELECTED = "SETTLER_SELECTED",
+
+  // active service state
+  SETTLER_SERVICE_START = "SETTLER_SERVICE_START",
+  SETTLER_SERVICE_END = "SETTLER_SERVICE_END",
+  SETTLER_EVIDENCE_SUBMITTED = "SETTLER_EVIDENCE_SUBMITTED",
+  SETTLER_EVIDENCE_UPDATED = "SETTLER_EVIDENCE_UPDATED",
+
+  // incompletion & completion state
+  JOB_COMPLETED = "JOB_COMPLETED",
+  JOB_INCOMPLETE = "JOB_INCOMPLETE",
+  CUSTOMER_JOB_INCOMPLETE_UPDATED = "CUSTOMER_JOB_INCOMPLETE_UPDATED",
+  CUSTOMER_REJECT_INCOMPLETION_RESOLVE = "CUSTOMER_REJECT_INCOMPLETION_RESOLVE",
+  SETTLER_RESOLVE_INCOMPLETION = "SETTLER_RESOLVE_INCOMPLETION",
+  SETTLER_UPDATE_INCOMPLETION_EVIDENCE = "SETTLER_UPDATE_INCOMPLETION_EVIDENCE",
+  SETTLER_REJECT_INCOMPLETION = "SETTLER_REJECT_INCOMPLETION",
+  CUSTOMER_CONFIRM_COMPLETION = "CUSTOMER_CONFIRM_COMPLETION",
+
+  // cooldown states
+  COOLDOWN_REPORT_SUBMITTED = "COOLDOWN_REPORT_SUBMITTED",
+  CUSTOMER_COOLDOWN_REPORT_UPDATED = "CUSTOMER_COOLDOWN_REPORT_UPDATED",
+  SETTLER_RESOLVE_COOLDOWN_REPORT = "SETTLER_RESOLVE_COOLDOWN_REPORT",
+  SETTLER_UPDATE_COOLDOWN_REPORT_EVIDENCE = "SETTLER_UPDATE_COOLDOWN_REPORT_EVIDENCE",
+  CUSTOMER_COOLDOWN_REPORT_NOT_RESOLVED = "CUSTOMER_COOLDOWN_REPORT_NOT_RESOLVED",
+  COOLDOWN_REPORT_COMPLETED = "COOLDOWN_REPORT_COMPLETED",
+  SETTLER_REJECT_COOLDOWN_REPORT = "SETTLER_REJECT_COOLDOWN_REPORT",
+  
+  // final states
+  BOOKING_COMPLETED = "BOOKING_COMPLETED",
+  BOOKING_CANCELLED = "BOOKING_CANCELLED",
+  BOOKING_CANCELLED_BY_CUSTOMER = "BOOKING_CANCELLED_BY_CUSTOMER",
+  BOOKING_CANCELLED_BY_SETTLER = "BOOKING_CANCELLED_BY_SETTLER",
+
+  PAYMENT_RELEASED = "PAYMENT_RELEASED",
+  REPORT_SUBMITTED = "REPORT_SUBMITTED",
+  STATUS_CHANGED = "STATUS_CHANGED",
+
+  // extra states
+  SETTLER_QUOTE_UPDATED = "SETTLER_QUOTE_UPDATED",
+}
 
 export interface Acceptor {
   settlerId: string;
@@ -12,6 +66,13 @@ export interface Acceptor {
   lastName: string;
   acceptedAt: string; // store as ISO string, or use Firestore Timestamp if needed
 }
+
+export interface AcceptorsWithDetails extends Acceptor {
+  settler?: User
+  service?: SettlerService
+}
+
+
 
 export enum BookingActorType {
   SETTLER = "SETTLER",
@@ -81,6 +142,10 @@ export interface BookingWithUsers extends Booking {
   settler?: User
 }
 
+export interface BookingDetailsLatestData extends Booking {
+  acceptorsWithDetails?: AcceptorsWithDetails[]
+}
+
 export async function fetchBookings(): Promise<Booking[]> {
   const bookingsRef = collection(db, "bookings")
   
@@ -119,5 +184,25 @@ export async function fetchBookingsWithUsers(): Promise<BookingWithUsers[]> {
   } catch (error) {
     console.error("Error fetching bookings with users:", error)
     return []
+  }
+}
+
+
+export async function fetchBookingById(bookingId: string): Promise<Booking | null> {
+  try {
+    const bookingRef = doc(db, "bookings", bookingId)
+    const bookingSnap = await getDoc(bookingRef)
+    
+    if (!bookingSnap.exists()) {
+      return null
+    }
+    
+    return {
+      id: bookingSnap.id,
+      ...bookingSnap.data(),
+    } as Booking
+  } catch (error) {
+    console.error("Error fetching booking by ID:", error)
+    return null
   }
 }

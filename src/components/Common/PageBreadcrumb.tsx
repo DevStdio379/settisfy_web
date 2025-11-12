@@ -1,35 +1,48 @@
-import { ReactNode } from 'react'
-import { Breadcrumb } from 'react-bootstrap'
-import { Helmet } from 'react-helmet'
-import { Link } from 'react-router-dom'
+// src/components/Common/PageBreadcrumb.tsx
+import { Link, useLocation, useParams } from "react-router-dom"
+import { Breadcrumb } from "react-bootstrap"
 
-interface PageTitleProps {
+interface PageBreadcrumbProps {
+  title?: string
   subName?: string
-  title: string
-  addedChild?: ReactNode
 }
-const PageBreadcrumb = ({ subName, title, addedChild }: PageTitleProps) => {
+
+const PageBreadcrumb = ({ title, subName }: PageBreadcrumbProps) => {
+  const location = useLocation()
+  const params = useParams<{ bookingId?: string }>()
+
+  const pathnames = location.pathname.split("/").filter((x) => x)
+
   return (
-    <>
-      <Helmet>
-        <title>{title} | Window - React Admin & Dashboard</title>
-      </Helmet>
-      {subName && (
-        <div className="mt-2 mb-4 mb-md-6">
-          <h4 className="fw-semibold">{title}</h4>
-          {addedChild}
-          <div className="page-title-right">
-            <ol className="breadcrumb m-0">
-              <Link to="/" className="breadcrumb-item">
-                Home
-              </Link>
-              <Breadcrumb.Item>{subName}</Breadcrumb.Item>
-              <Breadcrumb.Item active>{title}</Breadcrumb.Item>
-            </ol>
-          </div>
-        </div>
-      )}
-    </>
+    <Breadcrumb className="mb-3">
+      <Breadcrumb.Item linkAs={Link} linkProps={{ to: "/" }}>
+        Home
+      </Breadcrumb.Item>
+
+      {pathnames.map((name, index) => {
+        const routeTo = "/" + pathnames.slice(0, index + 1).join("/")
+        const isLast = index === pathnames.length - 1
+
+        const displayName =
+          name === "dashboards"
+            ? "Dashboard"
+            : name === "bookings"
+            ? "Bookings"
+            : params.bookingId
+            ? `Booking #${params.bookingId}`
+            : name
+
+        return isLast ? (
+          <Breadcrumb.Item key={name} active>
+            {displayName}
+          </Breadcrumb.Item>
+        ) : (
+          <Breadcrumb.Item key={name} linkAs={Link} linkProps={{ to: routeTo }}>
+            {displayName}
+          </Breadcrumb.Item>
+        )
+      })}
+    </Breadcrumb>
   )
 }
 

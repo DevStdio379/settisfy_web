@@ -4,6 +4,7 @@ import { Route, RouteProps } from 'react-router-dom'
 // PrivateRoute
 import PrivateRoute from './PrivateRoute'
 import Bookings from './../views/dashboards/Bookings'
+import BookingDetails from './../views/dashboards/BookingDetails'
 
 // Dashboards
 const Ecommerce = React.lazy(() => import('./../views/dashboards'))
@@ -218,6 +219,12 @@ const dashboardRoutes: RoutesProps = {
       path: '/dashboards/bookings',
       name: 'Bookings',
       element: <Bookings />,
+      route: PrivateRoute,
+    },
+    {
+      path: '/dashboards/bookings/:id',
+      name: 'Booking Details',
+      element: <BookingDetails />,
       route: PrivateRoute,
     }
     // {
