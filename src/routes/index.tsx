@@ -8,6 +8,9 @@ import BookingDetails from './../views/dashboards/BookingDetails'
 import BookingTimeline from '@/views/dashboards/BookingTimeline'
 import SettlerServices from '@/views/dashboards/SettlerServices'
 import SettlerServiceProfile from '@/views/dashboards/SettlerServiceProfile'
+import Catalogue from '@/views/dashboards/Catalogues'
+import CatalogueDetails from '@/views/dashboards/CatalogueDetails'
+import Catalogues from '@/views/dashboards/Catalogues'
 
 // Dashboards
 const Ecommerce = React.lazy(() => import('./../views/dashboards'))
@@ -234,6 +237,18 @@ const dashboardRoutes: RoutesProps = {
       path: '/dashboards/bookings/:id/timeline',
       name: 'Booking Timeline',
       element: <BookingTimeline />,
+      route: PrivateRoute,
+    },
+    {
+      path: '/dashboards/catalogues',
+      name: 'Catalogues',
+      element: <Catalogues />,
+      route: PrivateRoute,
+    },
+    {
+      path: '/dashboards/catalogues/:id',
+      name: 'Catalogue Details',
+      element: <CatalogueDetails />,
       route: PrivateRoute,
     },
     {

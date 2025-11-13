@@ -16,15 +16,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
 // Core files
-@import 'bootstrap/scss/functions';
+@import '../../../node_modules/bootstrap/scss/functions';
 
-@import 'theme/theme-variables';
-@import 'theme/theme-variables-custom';
-@import 'theme/theme-variables-dark';
-@import 'theme/theme-root';
-@import 'theme/theme-utilities';
-
-@import 'bootstrap/scss/bootstrap';
+@import '../scss/theme/theme-variables';
+@import './theme/theme-variables-custom';
+@import './theme/theme-variables-dark';
+@import './theme/theme-root';
+@import './theme/theme-utilities';
+@import '../../../node_modules/bootstrap/scss/bootstrap';
 
 // Structure
 @import 'structure/apps';

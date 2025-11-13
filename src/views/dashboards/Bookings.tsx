@@ -33,7 +33,7 @@ const Bookings = () => {
             <th>Booked Service</th>
             <th>Total</th>
             <th>Status</th>
-            <th>Date</th>
+            <th>Updated At</th>
             <th className="text-end">Action</th>
           </tr>
         </thead>
@@ -100,7 +100,14 @@ const Bookings = () => {
                 </span>
               </td>
               <td>
-                TBC
+                {booking.updatedAt?.toDate().toLocaleString(undefined, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
               </td>
               <td className="text-end">
                 <Link to={`/dashboards/bookings/${booking.id}`}>

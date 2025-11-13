@@ -29,8 +29,8 @@ const SettlerServices = () => {
             <th>Service Provider Services</th>
             <th>Service Provider</th>
             <th>Ratings</th>
-            <th>Active/Inactive</th>
-            <th>Date</th>
+            <th>Status</th>
+            <th>Updated At</th>
             <th className="text-end">Action</th>
           </tr>
         </thead>
@@ -68,12 +68,19 @@ const SettlerServices = () => {
               </td>
               <td>{service.averageRatings ?? '-'}</td>
               <td>
-                <span className="text-muted">
+                <span className={`badge rounded-pill ${service.isActive ? 'bg-success' : 'bg-secondary'}`}>
                   {service.isActive ? 'Active' : 'Inactive'}
                 </span>
               </td>
               <td>
-                TBC
+                {service.updatedAt?.toDate().toLocaleString(undefined, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
               </td>
               <td className="text-end">
                 <Link to={`/dashboards/settler-service/${service.id}`}>
