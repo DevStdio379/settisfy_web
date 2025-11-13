@@ -2,7 +2,7 @@ import TitleHelmet from '@/components/Common/TitleHelmet'
 import { Card, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Catalogue, fetchSelectedCatalogue, updateCatalogue } from '@/services/CatalogueServices'
+import { Catalogue, createCatalogue, deleteCatalogue, fetchSelectedCatalogue, updateCatalogue } from '@/services/CatalogueServices'
 import { SERVICE_CATEGORIES } from '@/constants/ServiceCategory'
 import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton'
 
@@ -13,13 +13,32 @@ const CatalogueDetails = () => {
 
   useEffect(() => {
     const load = async () => {
-      if (id) {
-        const data = await fetchSelectedCatalogue(id)
-        setCatalogue(data)
+      if (id && id !== 'new') {
+        const data = await fetchSelectedCatalogue(id);
+        setCatalogue(data);
+      } else {
+        // Initialize empty form for creation
+        setCatalogue({
+          imageUrls: [],
+          title: '',
+          description: '',
+          includedServices: '',
+          excludedServices: '',
+          category: '',
+          basePrice: 0,
+          coolDownPeriodHours: 0,
+          dynamicOptions: [],
+          isActive: true,
+          bookingsCount: 0,
+          averageRatings: 0,
+          createAt: null,
+          updateAt: null,
+        });
       }
-    }
-    load()
-  }, [])
+    };
+    load();
+  }, [id]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -65,29 +84,17 @@ const CatalogueDetails = () => {
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-    setLoading(true);
     e.preventDefault();
+    setLoading(true);
 
     if (!catalogue) return;
 
     // Validation
     const missingFields: string[] = [];
-
     if (!catalogue.title) missingFields.push('Title');
-    if (!catalogue.basePrice && catalogue.basePrice !== 0) missingFields.push('Base Price');
+    if (catalogue.basePrice == null) missingFields.push('Base Price');
     if (!catalogue.category) missingFields.push('Category');
     if (catalogue.imageUrls.length === 0) missingFields.push('At least one Image');
-    
-
-    // Check dynamic options
-    catalogue.dynamicOptions?.forEach((opt, i) => {
-      if (!opt.name) missingFields.push(`Option ${i + 1} Name`);
-      opt.subOptions?.forEach((sub, j) => {
-        if (!sub.label) missingFields.push(`Option ${i + 1} SubOption ${j + 1} Label`);
-        if (sub.additionalPrice === null || sub.additionalPrice === undefined)
-          missingFields.push(`Option ${i + 1} SubOption ${j + 1} Price`);
-      });
-    });
 
     if (missingFields.length > 0) {
       setLoading(false);
@@ -96,13 +103,19 @@ const CatalogueDetails = () => {
     }
 
     try {
-      // Call your update function
-      await updateCatalogue(id!, catalogue);
-      alert('Catalogue updated successfully!');
-      window.location.reload();
+      if (id && id !== 'new') {
+        await updateCatalogue(id, catalogue);
+        alert('Catalogue updated successfully!');
+      } else {
+        const newId = await createCatalogue(catalogue);
+        alert('New service created successfully!');
+        window.location.href = '/dashboards/catalogues';
+      }
     } catch (err) {
       console.error(err);
-      alert('Failed to update catalogue.');
+      alert('Failed to save catalogue.' + err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -137,13 +150,13 @@ const CatalogueDetails = () => {
 
   return (
     <>
-      <TitleHelmet title={id ? 'Edit Catalogue' : 'Catalogue Details'} />
+      <TitleHelmet title={id ? 'Edit Catalogue' : 'Create Catalogue'} />
       <PageBreadcrumbButton title="Catalogue" subName="Dashboard" />
       <Card className="flex-grow-1">
         <Card.Header>
           <Row className="align-items-center">
             <Col md={10}>
-              <h4 className="mb-0">{id ? `Catalogue ID: ${id}` : 'New Catalogue'}</h4>
+              <h4 className="mb-0">{id && id !== 'new' ? `Catalogue ID: ${id}` : 'New Catalogue'}</h4>
             </Col>
             <Col md={2}>
               <Form.Group className="mb-0">
@@ -214,34 +227,44 @@ const CatalogueDetails = () => {
                           </DropdownButton>
                         </Form.Group>
                       </Col>
-                      <Col md={4}>
+                        <Col md={4}>
                         <Form.Group className="mb-0">
                           <Form.Label>Base Price (RM)</Form.Label>
                           <Form.Control
-                            disabled={loading}
-                            type="number"
-                            name="basePrice"
-                            value={catalogue.basePrice}
-                            onChange={handleChange}
-                            min="0"
-                            step="0.01"
-                            required
+                          disabled={loading}
+                          type="number"
+                          name="basePrice"
+                          value={catalogue.basePrice}
+                          onChange={handleChange}
+                          min="0"
+                          step="1"
+                          required
                           />
                         </Form.Group>
-                      </Col>
-                      <Col md={5}>
+                        </Col>
+                        <Col md={5}>
                         <Form.Group className="mb-0">
                           <Form.Label>Warranty Period (Hours)</Form.Label>
                           <Form.Control
-                            disabled={loading}
-                            type="number"
-                            name="warrantyPeriodHours"
-                            value={catalogue.coolDownPeriodHours}
-                            onChange={handleChange}
-                            min="0"
+                          disabled={loading}
+                          type="number"
+                          name="coolDownPeriodHours"
+                          value={catalogue.coolDownPeriodHours}
+                          onChange={(e) => {
+                            setCatalogue(prev => {
+                            if (!prev) return prev;
+                            return {
+                              ...prev,
+                              coolDownPeriodHours: parseFloat(e.target.value)
+                            };
+                            });
+                          }}
+                          min="0"
+                          step="1"
+                          required
                           />
                         </Form.Group>
-                      </Col>
+                        </Col>
                     </Row>
                   </Card.Body>
                 </Card>
@@ -496,12 +519,30 @@ const CatalogueDetails = () => {
             </div>
 
             <div className="d-flex gap-2 justify-content-end">
-              <Button disabled={loading} variant="primary" type="submit" >
-                {loading ? (id ? 'Updating...' : 'Submiting...') : id ? 'Update Catalogue' : 'Create Catalogue'}
+              <Button disabled={loading} variant="primary" type="submit" onClick={handleSubmit} >
+                {loading ? (id && id !== 'new' ? 'Updating...' : 'Submiting...') : id && id !== 'new' ? 'Update Catalogue' : 'Create Catalogue'}
               </Button>
-              <Button disabled={loading} variant="danger" type="button">
-                Remove
-              </Button>
+              { id && id !== 'new' && (
+                <Button
+                  disabled={loading}
+                  variant={catalogue.isActive ? 'danger' : 'success'}
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      await deleteCatalogue(id);
+                      alert(`Catalogue deleted successfully!`);
+                      window.location.href = '/dashboards/catalogues';
+                    } catch (err) {
+                      console.error(err);
+                      alert('Failed to update status.');
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                >
+                  {loading ? 'Deleting...' : 'Delete Catalogue'}
+                </Button>
+              )}
             </div>
           </Form>
         </Card.Body>

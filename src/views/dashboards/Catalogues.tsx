@@ -21,6 +21,14 @@ const Catalogues = () => {
   return (
     <>
       <PageBreadcrumbButton title="Catalogue" subName="Dashboard" />
+      <div className="d-flex justify-content-end mb-3">
+        <Link to="/dashboards/catalogues/new">
+          <Button variant="primary">
+            <i className="fi fi-rr-add me-2"></i>
+            Add New Service
+          </Button>
+        </Link>
+      </div>
       {/* Start:: Col */}
       <Table responsive hover className="mb-0">
         <thead>
