@@ -11,9 +11,9 @@ export enum BookingActivityType {
   // booking process states
   NOTES_TO_SETTLER_UPDATED = "NOTES_TO_SETTLER_UPDATED",
   
-  // payment states
-  PAYMENT_APPROVED = "PAYMENT_APPROVED",
-  PAYMENT_REJECTED = "PAYMENT_REJECTED",
+  // booking verification states
+  BOOKING_APPROVED = "BOOKING_APPROVED",
+  BOOKING_REJECTED = "BOOKING_REJECTED",
 
   // initial booking state
   QUOTE_CREATED = "QUOTE_CREATED",

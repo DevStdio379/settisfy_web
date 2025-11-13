@@ -1,7 +1,7 @@
 import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton'
 import { Button, Card, Col, Row, Stack, Table } from 'react-bootstrap'
 import type { AcceptorsWithDetails, Booking } from "../../services/BookingServices"
-import { BookingActivityType, fetchBookingById, updateBooking } from "../../services/BookingServices"
+import { BookingActivityType, BookingActorType, fetchBookingById, updateBooking } from "../../services/BookingServices"
 import type { BookingStatus } from "@/utils/status"
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
@@ -9,6 +9,8 @@ import Avatar from '@/components/UiElements/Base/Avatars/Avatar'
 import { fetchListOfUsers, fetchSelectedUser, User } from '@/services/UserServices'
 import { fetchListOfSettlerServices, SettlerService } from '@/services/SettlerServiceServices'
 import { getStatusBadgeClass, getStatusLabel } from '@/utils/status'
+import { arrayUnion } from 'firebase/firestore'
+import { generateId } from '@/common/helpers/helperFunctions'
 
 const BookingDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -120,7 +122,15 @@ const BookingDetails = () => {
                           onClick={async () => {
                             setLoading(true)
                             try {
-                              await updateBooking(booking.id!, { status: 0 })
+                              await updateBooking(booking.id!, {
+                                status: 0,
+                                timeline: arrayUnion({
+                                  id: generateId(),
+                                  type: BookingActivityType.BOOKING_APPROVED,
+                                  timestamp: new Date(),
+                                  actor: BookingActorType.SYSTEM,
+                                }) as any
+                              })
                               window.location.reload()
                             } catch (error) {
                               console.error('Error updating booking:', error)
@@ -132,13 +142,95 @@ const BookingDetails = () => {
                           {loading ? 'Submitting...' : 'Valid Booking'}
                         </Button>
                         <Button
+                          disabled={loading}
                           variant="danger"
                           size="sm"
-                          onClick={() => console.log('Invalidate booking:', booking.id)}
+                          onClick={async () => {
+                            setLoading(true)
+                            try {
+                              await updateBooking(booking.id!, {
+                                status: 0,
+                                timeline: arrayUnion({
+                                  id: generateId(),
+                                  type: BookingActivityType.BOOKING_REJECTED,
+                                  timestamp: new Date(),
+                                  actor: BookingActorType.SYSTEM,
+                                }) as any
+                              })
+                              window.location.reload()
+                            } catch (error) {
+                              console.error('Error updating booking:', error)
+                              setLoading(false)
+                            }
+                          }}
                         >
                           <i className="ri-close-line me-1"></i>
-                          Invalid Booking
+                          {loading ? 'Submitting...' : 'Invalid Booking'}
                         </Button>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              )}
+              {booking.status === 0.2 && (
+                <Card className="border-0 shadow-sm" style={{ backgroundColor: '#dc354515' }}>
+                  <Card.Body className="p-3">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="ri-alert-line text-danger" style={{ fontSize: '24px' }}></i>
+                        <div>
+                          <h6 className="mb-1 fw-semibold">Action Required</h6>
+                          <p className="mb-0 text-muted small">Please select ONE service provider from the list of ACCEPTORS below. Choose wisely, you can review their profile and ratings before assigning the service provider.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              )}
+
+              {/* Incompletion Report */}
+              {(booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION || 
+                booking.incompletionStatus === BookingActivityType.SETTLER_RESOLVE_INCOMPLETION) && (
+                <Card className="border-0 shadow-sm" style={{ backgroundColor: '#ffc10715' }}>
+                  <Card.Body className="p-3">
+                    <div className="d-flex align-items-center gap-3">
+                      <i className={`ri-information-line ${
+                        booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION 
+                          ? 'text-danger' 
+                          : 'text-success'
+                      }`} style={{ fontSize: '24px' }}></i>
+                      <div>
+                        <h6 className="mb-1 fw-semibold">Incompletion Report Status</h6>
+                        {booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION && (
+                          <p className="text-danger fw-bold mb-0">Service provider has rejected the incompletion report.</p>
+                        )}
+                        {booking.incompletionStatus === BookingActivityType.SETTLER_RESOLVE_INCOMPLETION && (
+                          <p className="text-success fw-bold mb-0">Service provider plans to resolve the incompletion issues.</p>
+                        )}
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              )}
+
+              {/* Warranty Issue Report */}
+              {(booking.cooldownStatus === BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT || booking.cooldownStatus === BookingActivityType.SETTLER_RESOLVE_COOLDOWN_REPORT) && (
+                <Card className="border-0 shadow-sm" style={{ backgroundColor: '#ffc10715' }}>
+                  <Card.Body className="p-3">
+                    <div className="d-flex align-items-center gap-3">
+                      <i className={`ri-information-line ${
+                        booking.cooldownStatus === BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT
+                          ? 'text-danger'
+                          : 'text-success'
+                      }`} style={{ fontSize: '24px' }}></i>
+                      <div>
+                        <h6 className="mb-1 fw-semibold">Warranty Issue Report Status</h6>
+                        {booking.cooldownStatus === BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT && (
+                          <p className="text-danger fw-bold mb-0">Service provider has rejected the warranty issue report.</p>
+                        )}
+                        {booking.cooldownStatus === BookingActivityType.SETTLER_RESOLVE_COOLDOWN_REPORT && (
+                          <p className="text-success fw-bold mb-0">Service provider plans to resolve the warranty issue.</p>
+                        )}
                       </div>
                     </div>
                   </Card.Body>
@@ -377,13 +469,51 @@ const BookingDetails = () => {
                             <td>{acc.service?.serviceLocation}</td>
                             <td>{acc.service?.averageRatings ?? '-'}</td>
                             <td>
-                              <Button
-                                variant="success"
-                                size="sm"
-                                onClick={() => console.log('Accept acceptor:', acc.settlerId)}
-                              >
-                                Accept
-                              </Button>
+                              {!booking.settlerId && (
+                                <Button
+                                  disabled={loading}
+                                  variant="success"
+                                  size="sm"
+                                  onClick={async () => {
+                                    setLoading(true)
+                                    try {
+                                      await updateBooking(booking.id!, {
+                                        settlerId: acc.settlerId,
+                                        settlerServiceId: acc.settlerServiceId,
+                                        settlerFirstName: acc.settler?.firstName || '',
+                                        settlerLastName: acc.settler?.lastName || '',
+                                        serviceStartCode: Math.floor(1000000 + Math.random() * 9000000).toString(),
+
+                                        status: 1,
+                                        timeline: arrayUnion({
+                                          id: generateId(),
+                                          type: BookingActivityType.SETTLER_SELECTED,
+                                          timestamp: new Date(),
+                                          actor: BookingActorType.SYSTEM,
+
+                                          // additional info
+                                          settlerId: acc.settlerId,
+                                          settlerServiceId: acc.settlerServiceId,
+                                          settlerFirstName: acc.settler?.firstName || '',
+                                          settlerLastName: acc.settler?.lastName || '',
+                                          serviceStartCode: Math.floor(1000000 + Math.random() * 9000000).toString(),
+                                        }) as any
+                                      });
+                                      window.location.reload()
+                                    } catch (error) {
+                                      console.error('Error updating booking:', error)
+                                      setLoading(false)
+                                    }
+                                  }}
+                                >Accept</Button>
+                              )}
+                              {booking.settlerId && (
+                                <Button
+                                  disabled={true}
+                                  variant={booking.settlerId === acc.settlerId ? "success" : "danger"}
+                                  size="sm"
+                                >{booking.settlerId === acc.settlerId ? "Accepted" : "Rejected"}</Button>
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -431,9 +561,9 @@ const BookingDetails = () => {
                   )}
 
                   {/* if settler plan to resolve incompletion issues */}
-                  {booking.incompletionStatus === BookingActivityType.SETTLER_RESOLVE_INCOMPLETION && (
+                  {booking.incompletionResolvedImageUrls && booking.incompletionResolvedRemark && (
                     <>
-                      <h5 className="fw-semibold mb-3">Incompletion Report Resolve Evidence (by settler)</h5>
+                      <h5 className="fw-semibold mb- mt-3">Incompletion Report Resolve Evidence (by settler)</h5>
                       {/* incompletion report */}
                       {booking.incompletionResolvedImageUrls?.length ? (
                         <div className="mb-3">
@@ -462,13 +592,6 @@ const BookingDetails = () => {
                           </div>
                         </>
                       )}
-                    </>
-                  )}
-
-                  {/* if settler reject incompletion report */}
-                  {booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION && (
-                    <>
-                      <p className="text-muted mt-2 mb-0">Service provider has rejected the incompletion report.</p>
                     </>
                   )}
 
@@ -516,9 +639,9 @@ const BookingDetails = () => {
                   )}
 
                   {/* if settler plan to resolve warranty period issues */}
-                  {booking.cooldownStatus === BookingActivityType.SETTLER_RESOLVE_COOLDOWN_REPORT && (
+                  {booking.cooldownResolvedImageUrls && booking.cooldownResolvedRemark && (
                     <>
-                      <h5 className="fw-semibold mb-3">Warranty Period Report Resolve Evidence (by settler)</h5>
+                      <h5 className="fw-semibold mb-3 mt-3">Warranty Period Report Resolve Evidence (by settler)</h5>
                       {/* warranty period report */}
                       {booking.cooldownResolvedImageUrls?.length ? (
                         <div className="mb-3">

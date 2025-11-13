@@ -1,6 +1,7 @@
 export type BookingStatus =
     | 0.1
     | 0
+    | 0.2
     | 1
     | 2
     | 3
@@ -24,6 +25,8 @@ export function getStatusBadgeClass(status: BookingStatus): string {
             return 'bg-warning'
         case 0:
             return 'bg-secondary'
+        case 0.2:
+            return 'bg-warning'
         case 1:
             return 'bg-secondary'
         case 2:
@@ -65,6 +68,8 @@ export function getStatusLabel(status: BookingStatus): string {
             return 'Verify Booking'
         case 0:
             return 'Broadcasting'
+        case 0.2:
+            return 'Settler Accepted'
         case 1:
             return 'Settler Assigned'
         case 2:
@@ -84,7 +89,7 @@ export function getStatusLabel(status: BookingStatus): string {
         case 8.1:
             return 'Incompletion Report Rejected'
         case 8.2:
-            return 'Incompletion Report Resolved'
+            return 'Resolving Incompletion Report'
         case 9:
             return 'Warranty Period Issue Reported'
         case 9.1:

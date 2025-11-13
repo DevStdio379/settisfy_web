@@ -2,6 +2,7 @@ import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton';
 import TitleHelmet from '@/components/Common/TitleHelmet'
 import { fetchSelectedReviews, Review, ReviewWithUsers } from '@/services/ReviewServices';
 import { fetchSelectedSettlerService, SettlerService } from '@/services/SettlerServiceServices';
+import { fetchSelectedUser } from '@/services/UserServices';
 import { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
@@ -9,6 +10,7 @@ import { useParams } from 'react-router-dom'
 const SettlerServiceProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [settlerService, setSettlerService] = useState<SettlerService>();
+  const [user, setUser] = useState<any>();
   const [reviews, setReviews] = useState<ReviewWithUsers[]>([]);
 
   useEffect(() => {
@@ -17,6 +19,12 @@ const SettlerServiceProfile = () => {
         // Fetch settler service details
         const data = await fetchSelectedSettlerService(id);
         setSettlerService(data || undefined);
+
+        // Fetch user details
+        if (data?.settlerId) {
+          const userData = await fetchSelectedUser(data.settlerId);
+          setUser(userData);
+        }
 
         // Fetch reviews for the settler service
         const reviewsData = await fetchSelectedReviews(id);
@@ -64,6 +72,17 @@ const SettlerServiceProfile = () => {
             {/* Service Info */}
             <div className="col-md-6">
               <h2>{settlerService?.selectedCatalogue.title}</h2>
+              <div className="mb-3">
+                <div className="d-flex align-items-center gap-2">
+                  <img
+                    src={user?.profileImageUrl || '/default-avatar.png'}
+                    alt={`${settlerService?.settlerFirstName} ${settlerService?.settlerLastName}`}
+                    className="rounded-circle"
+                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                  />
+                  <p className="fs-5 fw-semibold mb-0">by {settlerService?.settlerFirstName} {settlerService?.settlerLastName}</p>
+                </div>
+              </div>
 
               {/* Rating */}
               <div className="mb-3">
