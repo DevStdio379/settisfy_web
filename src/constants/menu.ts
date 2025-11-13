@@ -45,6 +45,12 @@ const MENU_ITEMS: MenuItemTypes[] = [
         label: 'Settler Services',
         url: '/dashboards/settler-services',
         parentKey: 'dashboards',
+      },
+      {
+        key: 'users',
+        label: 'Users',
+        url: '/dashboards/users',
+        parentKey: 'dashboards',
       }
     ],
   },

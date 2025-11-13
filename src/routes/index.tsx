@@ -11,6 +11,7 @@ import SettlerServiceProfile from '@/views/dashboards/SettlerServiceProfile'
 import Catalogue from '@/views/dashboards/Catalogues'
 import CatalogueDetails from '@/views/dashboards/CatalogueDetails'
 import Catalogues from '@/views/dashboards/Catalogues'
+import Users from '@/views/dashboards/Users'
 
 // Dashboards
 const Ecommerce = React.lazy(() => import('./../views/dashboards'))
@@ -261,6 +262,12 @@ const dashboardRoutes: RoutesProps = {
       path: '/dashboards/settler-service/:id',
       name: 'Settler Service Profile',
       element: <SettlerServiceProfile />,
+      route: PrivateRoute,
+    },
+    {
+      path: '/dashboards/users',
+      name: 'Users',
+      element: <Users />,
       route: PrivateRoute,
     }
   ],

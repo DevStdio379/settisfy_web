@@ -30,7 +30,7 @@ export interface User {
 export async function fetchAllUsers(): Promise<User[]> {
   try {
     const usersRef = collection(db, "users")
-    const q = query(usersRef, orderBy("createAt", "desc"))
+    const q = query(usersRef)
     const snapshot = await getDocs(q)
 
     const users: User[] = snapshot.docs.map(doc => ({
