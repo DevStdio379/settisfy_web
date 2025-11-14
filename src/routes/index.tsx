@@ -13,6 +13,8 @@ import CatalogueDetails from '@/views/dashboards/CatalogueDetails'
 import Catalogues from '@/views/dashboards/Catalogues'
 import Users from '@/views/dashboards/Users'
 import UserDetails from '@/views/dashboards/UserDetails'
+import Parameters from '@/views/dashboards/SystemParameters'
+import SystemParameters from '@/views/dashboards/SystemParameters'
 
 // Dashboards
 const Ecommerce = React.lazy(() => import('./../views/dashboards'))
@@ -277,6 +279,12 @@ const dashboardRoutes: RoutesProps = {
       element: <UserDetails />,
       route: PrivateRoute,
     },
+    {
+      path: '/dashboards/system-parameters',
+      name: 'System Parameters',
+      element: <SystemParameters />,
+      route: PrivateRoute,
+    }
   ],
 }
 

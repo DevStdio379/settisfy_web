@@ -51,6 +51,12 @@ const MENU_ITEMS: MenuItemTypes[] = [
         label: 'Users',
         url: '/dashboards/users',
         parentKey: 'dashboards',
+      },
+      {
+        key: 'system-parameters',
+        label: 'System Parameters',
+        url: '/dashboards/system-parameters',
+        parentKey: 'dashboards',
       }
     ],
   },
