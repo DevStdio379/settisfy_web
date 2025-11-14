@@ -854,6 +854,7 @@ const BookingDetails = () => {
                                     type: BookingActivityType.PAYMENT_RELEASED_TO_SETTLER,
                                     timestamp: new Date(),
                                     actor: BookingActorType.SYSTEM,
+                                    status: 11,
 
                                     // additional info
                                     paymentReleaseToSettlerEvidenceUrls: finalImageUrls.length > 0 ? finalImageUrls : booking.paymentReleaseToSettlerEvidenceUrls,
@@ -988,6 +989,7 @@ const BookingDetails = () => {
                                     type: BookingActivityType.PAYMENT_RELEASED_TO_CUSTOMER,
                                     timestamp: new Date(),
                                     actor: BookingActorType.SYSTEM,
+                                    status: 11,
 
                                     // additional info
                                     paymentReleaseToCustomerEvidenceUrls: finalImageUrls.length > 0 ? finalImageUrls : booking.paymentReleaseToCustomerEvidenceUrls,
