@@ -73,6 +73,45 @@ const SystemParameters = () => {
                 </div>
               </div>
             </div>
+            <h6 className="mt-5">For Apple Reviewing Only</h6>
+            <div className="list-group-item">
+              <div className="row align-items-center">
+                <div className="col-9">
+                  <h6 className="mb-1">[OVERRIDE] Show Admin Approve Booking Button</h6>
+                </div>
+                <div className="col-3 d-flex justify-content-end align-items-center">
+                  <div className="form-check form-switch mb-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="showAdminApproveBookingButton"
+                      checked={parameters?.showAdminApproveBookingButton}
+                      onChange={(e) => handleToggleChange('showAdminApproveBookingButton', e.target.checked)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="list-group-item">
+              <div className="row align-items-center">
+                <div className="col-9">
+                  <h6 className="mb-1">[OVERRIDE] Show Assign Settler Button</h6>
+                </div>
+                <div className="col-3 d-flex justify-content-end align-items-center">
+                  <div className="form-check form-switch mb-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="showAssignSettlerButton"
+                      checked={parameters?.showAssignSettlerButton}
+                      onChange={(e) => handleToggleChange('showAssignSettlerButton', e.target.checked)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </Card.Body>
       </Card>

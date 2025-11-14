@@ -4,6 +4,8 @@ import { db } from "./config";
 export interface SystemParameter {
     platformFee: number;
     platformFeeIsActive: boolean;
+    showAdminApproveBookingButton: boolean;
+    showAssignSettlerButton?: boolean;
 }
 
 export const fetchSystemParameters = async (): Promise<SystemParameter> => {
@@ -14,6 +16,8 @@ export const fetchSystemParameters = async (): Promise<SystemParameter> => {
     return {
         platformFee: data.platformFee,
         platformFeeIsActive: data.platformFeeIsActive,
+        showAdminApproveBookingButton: data.showAdminApproveBookingButton,
+        showAssignSettlerButton: data.showAssignSettlerButton,
     };
 }
 
