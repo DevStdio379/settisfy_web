@@ -1,7 +1,7 @@
 import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton'
 import { Button, Card, Col, Row, Stack, Table } from 'react-bootstrap'
 import type { AcceptorsWithDetails, Booking } from "../../services/BookingServices"
-import { BookingActivityType, BookingActorType, fetchBookingById, updateBooking } from "../../services/BookingServices"
+import { BookingActivityType, BookingActorType, fetchBookingById, updateBooking, uploadImages } from "../../services/BookingServices"
 import type { BookingStatus } from "@/utils/status"
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
@@ -9,8 +9,9 @@ import Avatar from '@/components/UiElements/Base/Avatars/Avatar'
 import { fetchListOfUsers, fetchSelectedUser, User } from '@/services/UserServices'
 import { fetchListOfSettlerServices, SettlerService } from '@/services/SettlerServiceServices'
 import { getStatusBadgeClass, getStatusLabel } from '@/utils/status'
-import { arrayUnion } from 'firebase/firestore'
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore'
 import { generateId } from '@/common/helpers/helperFunctions'
+import { db } from '@/services/config'
 
 const BookingDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -66,6 +67,56 @@ const BookingDetails = () => {
     }
     load()
   }, [id])
+
+
+  const handleFileChange = (type: 'settler' | 'customer') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setBooking(prev => {
+        if (!prev) return prev;
+        const field = type === 'settler' ? 'paymentReleaseToSettlerEvidenceUrls' : 'paymentReleaseToCustomerEvidenceUrls';
+        const newImages = [...(prev[field] || []), reader.result as string];
+        return { ...prev, [field]: newImages };
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = (type: 'settler' | 'customer', index: number) => {
+    if (!booking) return;
+    const field = type === 'settler' ? 'paymentReleaseToSettlerEvidenceUrls' : 'paymentReleaseToCustomerEvidenceUrls';
+    const images = booking[field];
+    if (!images) return;
+    const newImages = images.filter((_, i) => i !== index);
+    setBooking(prev => prev ? { ...prev, [field]: newImages } : prev);
+  };
+
+  const renderAddImage = (type: 'settler' | 'customer') => (
+    <label
+      className="border rounded d-flex align-items-center justify-content-center"
+      style={{
+        width: "120px",
+        height: "120px",
+        cursor: loading ? "not-allowed" : "pointer",
+        backgroundColor: "#f8f9fa",
+      }}
+    >
+      <div className="text-center">
+        <i className="bi bi-plus fs-1 text-muted"></i>
+        <div className="small text-muted">Add Image</div>
+      </div>
+      <input
+        disabled={loading}
+        type="file"
+        accept="image/*"
+        className="d-none"
+        onChange={handleFileChange(type)}
+      />
+    </label>
+  );
 
   if (loading) return <div>Loading...</div>
   if (!booking) return <div>Booking not found</div>
@@ -189,40 +240,38 @@ const BookingDetails = () => {
               )}
 
               {/* Incompletion Report */}
-              {(booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION || 
+              {(booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION ||
                 booking.incompletionStatus === BookingActivityType.SETTLER_RESOLVE_INCOMPLETION) && (
-                <Card className="border-0 shadow-sm" style={{ backgroundColor: '#ffc10715' }}>
-                  <Card.Body className="p-3">
-                    <div className="d-flex align-items-center gap-3">
-                      <i className={`ri-information-line ${
-                        booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION 
-                          ? 'text-danger' 
+                  <Card className="border-0 shadow-sm" style={{ backgroundColor: '#ffc10715' }}>
+                    <Card.Body className="p-3">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className={`ri-information-line ${booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION
+                          ? 'text-danger'
                           : 'text-success'
-                      }`} style={{ fontSize: '24px' }}></i>
-                      <div>
-                        <h6 className="mb-1 fw-semibold">Incompletion Report Status</h6>
-                        {booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION && (
-                          <p className="text-danger fw-bold mb-0">Service provider has rejected the incompletion report.</p>
-                        )}
-                        {booking.incompletionStatus === BookingActivityType.SETTLER_RESOLVE_INCOMPLETION && (
-                          <p className="text-success fw-bold mb-0">Service provider plans to resolve the incompletion issues.</p>
-                        )}
+                          }`} style={{ fontSize: '24px' }}></i>
+                        <div>
+                          <h6 className="mb-1 fw-semibold">Incompletion Report Status</h6>
+                          {booking.incompletionStatus === BookingActivityType.SETTLER_REJECT_INCOMPLETION && (
+                            <p className="text-danger fw-bold mb-0">Service provider has rejected the incompletion report.</p>
+                          )}
+                          {booking.incompletionStatus === BookingActivityType.SETTLER_RESOLVE_INCOMPLETION && (
+                            <p className="text-success fw-bold mb-0">Service provider plans to resolve the incompletion issues.</p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-              )}
+                    </Card.Body>
+                  </Card>
+                )}
 
               {/* Warranty Issue Report */}
               {(booking.cooldownStatus === BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT || booking.cooldownStatus === BookingActivityType.SETTLER_RESOLVE_COOLDOWN_REPORT) && (
                 <Card className="border-0 shadow-sm" style={{ backgroundColor: '#ffc10715' }}>
                   <Card.Body className="p-3">
                     <div className="d-flex align-items-center gap-3">
-                      <i className={`ri-information-line ${
-                        booking.cooldownStatus === BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT
-                          ? 'text-danger'
-                          : 'text-success'
-                      }`} style={{ fontSize: '24px' }}></i>
+                      <i className={`ri-information-line ${booking.cooldownStatus === BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT
+                        ? 'text-danger'
+                        : 'text-success'
+                        }`} style={{ fontSize: '24px' }}></i>
                       <div>
                         <h6 className="mb-1 fw-semibold">Warranty Issue Report Status</h6>
                         {booking.cooldownStatus === BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT && (
@@ -332,7 +381,7 @@ const BookingDetails = () => {
                     <tbody>
                       <tr>
                         <td><strong>Base Price:</strong></td>
-                        <td className="text-end">RM{booking.catalogueService?.basePrice}</td>
+                        <td className="text-end">RM{Number(booking.catalogueService?.basePrice).toFixed(2)}</td>
                       </tr>
                       {booking.addons && booking.addons.map((addon) =>
                         addon.subOptions
@@ -344,10 +393,12 @@ const BookingDetails = () => {
                             </tr>
                           ))
                       )}
-                      <tr>
-                        <td><strong>Platform Fee:</strong></td>
-                        <td className="text-end">RM2.00</td>
-                      </tr>
+                      {booking.platformFeeIsActive && (
+                        <tr>
+                          <td><strong>Platform Fee:</strong></td>
+                          <td className="text-end">RM{Number(booking.platformFee || 0).toFixed(2)}</td>
+                        </tr>
+                      )}
                       {booking.manualQuoteDescription && Number(booking.manualQuotePrice) > 0 && (
                         <>
                           <tr>
@@ -687,6 +738,276 @@ const BookingDetails = () => {
                       <p className="text-muted mt-2 mb-0">No warranty period report</p>
                     </div>
                   )}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+          <Row className="mt-4">
+            <Col md={6}>
+              <Card className="shadow-sm border-0 bg-light-subtle h-100">
+                <Card.Body>
+                  <h5 className="fw-semibold mb-3">Payment Release to Service Provider</h5>
+                  <div className="d-flex flex-wrap gap-2">
+                    {!booking.paymentReleaseToSettlerEvidenceUrls ? (
+                      <label
+                        className="border rounded d-flex align-items-center justify-content-center w-100"
+                        style={{
+                          height: "250px",
+                          cursor: loading ? "not-allowed" : "pointer",
+                          backgroundColor: "#f8f9fa",
+                        }}
+                      >
+                        <div className="text-center">
+                          <i className="bi bi-image fs-1 text-muted"></i>
+                          <div className="mt-2 text-muted">No images available</div>
+                          <div className="small text-muted">Click to add image</div>
+                        </div>
+                        <input
+                          disabled={loading}
+                          type="file"
+                          accept="image/*"
+                          className="d-none"
+                          onChange={handleFileChange('settler')}
+                        />
+                      </label>
+                    ) : (
+                      <>
+                        {booking.paymentReleaseToSettlerEvidenceUrls.map((img, idx) => (
+                          <div
+                            key={idx}
+                            className="position-relative border rounded"
+                            style={{ width: "120px", height: "120px" }}
+                          >
+                            <img
+                              src={img}
+                              alt={`catalogue-${idx}`}
+                              className="w-100 h-100 rounded"
+                              style={{ objectFit: "cover" }}
+                            />
+                            <Button
+                              disabled={loading}
+                              variant="danger"
+                              size="sm"
+                              className="position-absolute top-0 end-0 m-1"
+                              style={{ padding: "2px 6px" }}
+                              onClick={() => removeImage('settler', idx)}
+                            >
+                              <i className="fi fi-rr-trash "></i>
+                            </Button>
+                          </div>
+                        ))}
+
+                        {booking.paymentReleaseToSettlerEvidenceUrls.length < 5 && renderAddImage('settler')}
+
+                        <div className="w-100 mt-3">
+                          <label className="form-label fw-semibold">Amount Released to Service Provider</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Enter amount (RM)"
+                            value={booking.paymentReleasedAmountToSettler || ''}
+                            onChange={(e) => {
+                              setBooking(prev => prev ? {
+                                ...prev,
+                                paymentReleasedAmountToSettler: parseFloat(e.target.value) || 0
+                              } : prev);
+                            }}
+                            disabled={loading}
+                          />
+                        </div>
+
+                        <div className="w-100 mt-3">
+                          <Button
+                            variant="primary"
+                            className="w-100"
+                            disabled={loading || !booking.paymentReleasedAmountToSettler || booking.paymentReleasedAmountToSettler <= 0}
+                            onClick={async () => {
+                              setLoading(true);
+                              try {
+                                const bookingRef = doc(db, 'bookings', booking.id!);
+
+                                let finalImageUrls: string[] = [];
+
+                                if (booking.paymentReleaseToSettlerEvidenceUrls && booking.paymentReleaseToSettlerEvidenceUrls.length > 0) {
+                                  // Separate local images from already uploaded URLs
+                                  const localImages = booking.paymentReleaseToSettlerEvidenceUrls.filter(url => !url.startsWith('https://'));
+                                  const existingImages = booking.paymentReleaseToSettlerEvidenceUrls.filter(url => url.startsWith('https://'));
+
+                                  // Upload only local images
+                                  const uploadedUrls = localImages.length > 0
+                                    ? await uploadImages(booking.id!, localImages)
+                                    : [];
+
+                                  // Combine existing + newly uploaded
+                                  finalImageUrls = [...existingImages, ...uploadedUrls];
+
+                                  // Limit to 5 images
+                                  finalImageUrls = finalImageUrls.slice(0, 5);
+                                }
+
+                                await updateDoc(bookingRef, {
+                                  ...booking,
+                                  paymentReleaseToSettlerEvidenceUrls: finalImageUrls.length > 0 ? finalImageUrls : booking.paymentReleaseToSettlerEvidenceUrls,
+                                  paymentReleasedAmountToSettler: booking.paymentReleasedAmountToSettler,
+                                  timeline: arrayUnion({
+                                    id: generateId(),
+                                    type: BookingActivityType.PAYMENT_RELEASED_TO_SETTLER,
+                                    timestamp: new Date(),
+                                    actor: BookingActorType.SYSTEM,
+
+                                    // additional info
+                                    paymentReleaseToSettlerEvidenceUrls: finalImageUrls.length > 0 ? finalImageUrls : booking.paymentReleaseToSettlerEvidenceUrls,
+                                    paymentReleasedAmountToSettler: booking.paymentReleasedAmountToSettler
+
+                                  }) as any
+                                });
+                                window.location.reload();
+                              } catch (error) {
+                                console.error('Error releasing payment:', error);
+                                setLoading(false);
+                              }
+                            }}
+                          >
+                            {loading ? 'Processing...' : 'Release Payment'}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={6}>
+              <Card className="shadow-sm border-0 bg-light-subtle h-100">
+                <Card.Body>
+                  <h5 className="fw-semibold mb-3">Payment Refund to Customer</h5>
+                  <div className="d-flex flex-wrap gap-2">
+                    {!booking.paymentReleaseToCustomerEvidenceUrls ? (
+                      <label
+                        className="border rounded d-flex align-items-center justify-content-center w-100"
+                        style={{
+                          height: "250px",
+                          cursor: loading ? "not-allowed" : "pointer",
+                          backgroundColor: "#f8f9fa",
+                        }}
+                      >
+                        <div className="text-center">
+                          <i className="bi bi-image fs-1 text-muted"></i>
+                          <div className="mt-2 text-muted">No images available</div>
+                          <div className="small text-muted">Click to add image</div>
+                        </div>
+                        <input
+                          disabled={loading}
+                          type="file"
+                          accept="image/*"
+                          className="d-none"
+                          onChange={handleFileChange('customer')}
+                        />
+                      </label>
+                    ) : (
+                      <>
+                        {booking.paymentReleaseToCustomerEvidenceUrls.map((img, idx) => (
+                          <div
+                            key={idx}
+                            className="position-relative border rounded"
+                            style={{ width: "120px", height: "120px" }}
+                          >
+                            <img
+                              src={img}
+                              alt={`catalogue-${idx}`}
+                              className="w-100 h-100 rounded"
+                              style={{ objectFit: "cover" }}
+                            />
+                            <Button
+                              disabled={loading}
+                              variant="danger"
+                              size="sm"
+                              className="position-absolute top-0 end-0 m-1"
+                              style={{ padding: "2px 6px" }}
+                              onClick={() => removeImage('customer', idx)}
+                            >
+                              <i className="fi fi-rr-trash "></i>
+                            </Button>
+                          </div>
+                        ))}
+
+                        {booking.paymentReleaseToCustomerEvidenceUrls.length < 5 && renderAddImage('customer')}
+
+                        <div className="w-100 mt-3">
+                          <label className="form-label fw-semibold">Amount Refunded to Customer</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Enter amount (RM)"
+                            value={booking.paymentReleasedAmountToCustomer || ''}
+                            onChange={(e) => {
+                              setBooking(prev => prev ? {
+                                ...prev,
+                                paymentReleasedAmountToCustomer: parseFloat(e.target.value) || 0
+                              } : prev);
+                            }}
+                            disabled={loading}
+                          />
+                        </div>
+
+                        <div className="w-100 mt-3">
+                          <Button
+                            variant="primary"
+                            className="w-100"
+                            disabled={loading || !booking.paymentReleasedAmountToCustomer || booking.paymentReleasedAmountToCustomer <= 0}
+                            onClick={async () => {
+                              setLoading(true);
+                              try {
+                                const bookingRef = doc(db, 'bookings', booking.id!);
+
+                                let finalImageUrls: string[] = [];
+
+                                if (booking.paymentReleaseToCustomerEvidenceUrls && booking.paymentReleaseToCustomerEvidenceUrls.length > 0) {
+                                  // Separate local images from already uploaded URLs
+                                  const localImages = booking.paymentReleaseToCustomerEvidenceUrls.filter(url => !url.startsWith('https://'));
+                                  const existingImages = booking.paymentReleaseToCustomerEvidenceUrls.filter(url => url.startsWith('https://'));
+
+                                  // Upload only local images
+                                  const uploadedUrls = localImages.length > 0
+                                    ? await uploadImages(booking.id!, localImages)
+                                    : [];
+
+                                  // Combine existing + newly uploaded
+                                  finalImageUrls = [...existingImages, ...uploadedUrls];
+
+                                  // Limit to 5 images
+                                  finalImageUrls = finalImageUrls.slice(0, 5);
+                                }
+
+                                await updateDoc(bookingRef, {
+                                  ...booking,
+                                  paymentReleaseToCustomerEvidenceUrls: finalImageUrls.length > 0 ? finalImageUrls : booking.paymentReleaseToCustomerEvidenceUrls,
+                                  paymentReleasedAmountToCustomer: booking.paymentReleasedAmountToCustomer,
+                                  timeline: arrayUnion({
+                                    id: generateId(),
+                                    type: BookingActivityType.PAYMENT_RELEASED_TO_CUSTOMER,
+                                    timestamp: new Date(),
+                                    actor: BookingActorType.SYSTEM,
+
+                                    // additional info
+                                    paymentReleaseToCustomerEvidenceUrls: finalImageUrls.length > 0 ? finalImageUrls : booking.paymentReleaseToCustomerEvidenceUrls,
+                                    paymentReleasedAmountToCustomer: booking.paymentReleasedAmountToCustomer
+
+                                  }) as any
+                                });
+                                window.location.reload();
+                              } catch (error) {
+                                console.error('Error releasing payment:', error);
+                                setLoading(false);
+                              }
+                            }}
+                          >
+                            {loading ? 'Processing...' : 'Release Payment'}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </Card.Body>
               </Card>
             </Col>

@@ -1,10 +1,11 @@
 // src/firebase/bookings.ts
-import { collection, getDocs, query, orderBy, getDoc, doc } from "firebase/firestore"
-import { db } from "./config"
+import { collection, getDocs, query, orderBy, getDoc, doc, updateDoc } from "firebase/firestore"
+import { db, storage } from "./config"
 import { Address } from "./AddressServices";
 import { Catalogue, DynamicOption } from "./CatalogueServices";
 import { fetchAllUsers, User } from "./UserServices";
 import { SettlerService } from "./SettlerServiceServices";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 export enum BookingActivityType {
 
@@ -51,7 +52,8 @@ export enum BookingActivityType {
   BOOKING_CANCELLED_BY_CUSTOMER = "BOOKING_CANCELLED_BY_CUSTOMER",
   BOOKING_CANCELLED_BY_SETTLER = "BOOKING_CANCELLED_BY_SETTLER",
 
-  PAYMENT_RELEASED = "PAYMENT_RELEASED",
+  PAYMENT_RELEASED_TO_SETTLER = "PAYMENT_RELEASED_TO_SETTLER",
+  PAYMENT_RELEASED_TO_CUSTOMER = "PAYMENT_RELEASED_TO_CUSTOMER",
   REPORT_SUBMITTED = "REPORT_SUBMITTED",
   STATUS_CHANGED = "STATUS_CHANGED",
 
@@ -133,6 +135,17 @@ export interface Booking {
   cancelReasonImageUrls?: string[];
   cancelActor?: BookingActorType;
   timeline: any[];
+
+  // system parameters
+  platformFeeIsActive?: boolean;
+  platformFee?: number;
+
+  // payment release
+  paymentReleasedAmountToSettler?: number;
+  paymentReleaseToSettlerEvidenceUrls?: string[];
+  paymentReleasedAmountToCustomer?: number;
+  paymentReleaseToCustomerEvidenceUrls?: string[];
+  
   createAt: any;
   updatedAt: any;
 }
@@ -207,13 +220,56 @@ export async function fetchBookingById(bookingId: string): Promise<Booking | nul
   }
 }
 
+export const uploadImages = async (imageName: string, imagesUrl: string[]) => {
+  const urls: string[] = [];
+
+  for (const uri of imagesUrl) {
+    // Skip already uploaded URLs (those starting with https://)
+    if (uri.startsWith('https://')) {
+      urls.push(uri);
+      continue;
+    }
+
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      const filename = `bookings/${imageName}_${Date.now()}.jpg`;
+      const storageRef = ref(storage, filename);
+
+      const uploadTask = uploadBytesResumable(storageRef, blob);
+
+      await new Promise<void>((resolve, reject) => {
+        uploadTask.on(
+          "state_changed",
+          snapshot => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log(`Upload ${filename}: ${progress.toFixed(2)}% done`);
+          },
+          reject,
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            urls.push(downloadURL);
+            resolve();
+          }
+        );
+      });
+
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
+  }
+
+  console.log("All images uploaded:", urls);
+  return urls;
+};
+
 export async function updateBooking(
   bookingId: string,
   updates: Partial<Booking>
 ): Promise<void> {
   try {
     const bookingRef = doc(db, "bookings", bookingId)
-    const { updateDoc } = await import("firebase/firestore")
     await updateDoc(bookingRef, updates)
   } catch (error) {
     console.error("Error updating booking:", error)

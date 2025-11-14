@@ -39,6 +39,10 @@ const getReadableType = (type?: BookingActivityType, message?: string) => {
     [BookingActivityType.COOLDOWN_REPORT_COMPLETED]: 'Cooldown report completed',
     [BookingActivityType.SETTLER_REJECT_COOLDOWN_REPORT]: 'Settler rejected cooldown report',
 
+    // payment released states
+    [BookingActivityType.PAYMENT_RELEASED_TO_SETTLER]: 'Payment released to settler',
+    [BookingActivityType.PAYMENT_RELEASED_TO_CUSTOMER]: 'Payment released to customer',
+
     // final booking state
     [BookingActivityType.BOOKING_COMPLETED]: 'Booking completed',
 
@@ -72,17 +76,20 @@ const BookingTimeline = () => {
                   <h5 className="card-title mb-4">Activity Timeline</h5>
                   {booking.timeline.slice().reverse().map((item, index) => (
                     <div key={index} className="d-flex mb-3">
-                      <div className="me-3">
+                        <div className="me-3">
                         <div
                           style={{
-                            width: '10px',
-                            height: '10px',
-                            borderRadius: '50%',
-                            backgroundColor: item.actor === 'SETTLER' ? '#0d6efd' : '#fd7e14',
-                            marginTop: '6px'
+                          width: '10px',
+                          height: '10px',
+                          borderRadius: '50%',
+                          backgroundColor: 
+                            item.actor === 'SETTLER' ? '#0d6efd' : 
+                            item.actor === 'SYSTEM' ? '#6c757d' : 
+                            '#fd7e14',
+                          marginTop: '6px'
                           }}
                         />
-                      </div>
+                        </div>
                       <div className="flex-grow-1">
                         <div className="card mb-2">
                           <div className="card-body">
@@ -254,6 +261,59 @@ const BookingTimeline = () => {
                             {item.cooldownResolvedRemark && (
                               <div className="mt-2">
                                 <small className="text-muted">Remark: {item.cooldownResolvedRemark}</small>
+                              </div>
+                            )}
+
+                            {item.paymentReleasedAmountToSettler && (
+                              <div className="mt-2">
+                                <small className="text-muted">Payment Released to Settler: RM{item.paymentReleasedAmountToSettler.toFixed(2)}</small>
+                              </div>
+                            )}
+                            {item.paymentReleaseToSettlerEvidenceUrls && item.paymentReleaseToSettlerEvidenceUrls.length > 0 && (
+                              <div className="mt-2">
+                                <div className="d-flex flex-wrap gap-2">
+                                  {item.paymentReleaseToSettlerEvidenceUrls.map((url: string, imgIndex: number) => (
+                                    <a key={imgIndex} href={url} target="_blank" rel="noopener noreferrer">
+                                      <img
+                                        src={url}
+                                        alt={`Payment to Settler evidence ${imgIndex + 1}`}
+                                        style={{
+                                          width: '100px',
+                                          height: '100px',
+                                          objectFit: 'cover',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      />
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {item.paymentReleasedAmountToCustomer && (
+                              <div className="mt-2">
+                                <small className="text-muted">Payment Released to Customer: RM{item.paymentReleasedAmountToCustomer.toFixed(2)}</small>
+                              </div>
+                            )}
+                            {item.paymentReleaseToCustomerEvidenceUrls && item.paymentReleaseToCustomerEvidenceUrls.length > 0 && (
+                              <div className="mt-2">
+                                <div className="d-flex flex-wrap gap-2">
+                                  {item.paymentReleaseToCustomerEvidenceUrls.map((url: string, imgIndex: number) => (
+                                    <a key={imgIndex} href={url} target="_blank" rel="noopener noreferrer">
+                                      <img
+                                        src={url}
+                                        alt={`Payment to Customer evidence ${imgIndex + 1}`}
+                                        style={{
+                                          width: '100px',
+                                          height: '100px',
+                                          objectFit: 'cover',
+                                          borderRadius: '4px',
+                                          cursor: 'pointer'
+                                        }}
+                                      />
+                                    </a>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </div>
