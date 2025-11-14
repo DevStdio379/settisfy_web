@@ -12,6 +12,7 @@ import Catalogue from '@/views/dashboards/Catalogues'
 import CatalogueDetails from '@/views/dashboards/CatalogueDetails'
 import Catalogues from '@/views/dashboards/Catalogues'
 import Users from '@/views/dashboards/Users'
+import UserDetails from '@/views/dashboards/UserDetails'
 
 // Dashboards
 const Ecommerce = React.lazy(() => import('./../views/dashboards'))
@@ -269,7 +270,13 @@ const dashboardRoutes: RoutesProps = {
       name: 'Users',
       element: <Users />,
       route: PrivateRoute,
-    }
+    },
+    {
+      path: '/dashboards/users/:id',
+      name: 'User Details',
+      element: <UserDetails />,
+      route: PrivateRoute,
+    },
   ],
 }
 
