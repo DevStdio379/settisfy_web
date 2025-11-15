@@ -5,7 +5,9 @@ export interface SystemParameter {
     platformFee: number;
     platformFeeIsActive: boolean;
     showAdminApproveBookingButton: boolean;
-    showAssignSettlerButton?: boolean;
+    showAssignSettlerButton: boolean;
+    faqLink: string;
+    customerSupportLink: string;
 }
 
 export const fetchSystemParameters = async (): Promise<SystemParameter> => {
@@ -18,6 +20,8 @@ export const fetchSystemParameters = async (): Promise<SystemParameter> => {
         platformFeeIsActive: data.platformFeeIsActive,
         showAdminApproveBookingButton: data.showAdminApproveBookingButton,
         showAssignSettlerButton: data.showAssignSettlerButton,
+        faqLink: data.faqLink,
+        customerSupportLink: data.customerSupportLink,
     };
 }
 

@@ -17,6 +17,7 @@ export type BookingStatus =
     | 9.2
     | 10
     | 11
+    | 12
     | number
 
 export function getStatusBadgeClass(status: BookingStatus): string {
@@ -56,6 +57,8 @@ export function getStatusBadgeClass(status: BookingStatus): string {
         case 10:
             return 'bg-success'
         case 11:
+            return 'bg-secondary'
+        case 12:
             return 'bg-danger'
         default:
             return 'bg-light text-dark'
@@ -99,6 +102,8 @@ export function getStatusLabel(status: BookingStatus): string {
         case 10:
             return 'Review Submitted'
         case 11:
+            return 'Payment Released'
+        case 12:
             return 'Booking Cancelled'
         default:
             return 'Unknown'

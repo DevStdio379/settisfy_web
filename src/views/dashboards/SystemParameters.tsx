@@ -19,8 +19,12 @@ const SystemParameters = () => {
     load()
   }, [])
 
-  const handleValueChange = (field: keyof SystemParameter, value: number) => {
-    setParameters(prev => prev ? { ...prev, [field]: value } : undefined)
+  const handleValueChange = (field: keyof SystemParameter, value: number | string) => {
+    if (field === 'platformFee' && typeof value === 'number') {
+      setParameters(prev => prev ? { ...prev, [field]: value } : undefined)
+    } else if (typeof value === 'string') {
+      setParameters(prev => prev ? { ...prev, [field]: value } : undefined)
+    }
   }
 
   const handleToggleChange = (field: keyof SystemParameter, checked: boolean) => {
@@ -33,7 +37,7 @@ const SystemParameters = () => {
       <PageBreadcrumb title="Parameters" subName="Dashboard" />
       <Card className="flex-grow-1">
         <Card.Header className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Parameters</h5>
+          <h5 className="mb-0">System Parameters</h5>
           <button className="btn btn-primary btn-sm" disabled={loading} onClick={async () => {
             if (parameters) {
               setLoading(true)
@@ -109,6 +113,35 @@ const SystemParameters = () => {
                       onChange={(e) => handleToggleChange('showAssignSettlerButton', e.target.checked)}
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+            <h6 className="mt-5">For Customer Support</h6>
+            <div className="list-group-item">
+              <div className="row align-items-center">
+                <div className="col-12">
+                  <h6 className="mb-1">FAQs Link</h6>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Enter FAQs link"
+                    value={parameters?.faqLink ?? ''}
+                    onChange={(e) => handleValueChange('faqLink', e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="list-group-item">
+              <div className="row align-items-center">
+                <div className="col-9">
+                  <h6 className="mb-1">Customer Support Link</h6>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Enter Customer Support link"
+                    value={parameters?.customerSupportLink ?? ''}
+                    onChange={(e) => handleValueChange('customerSupportLink', e.target.value)}
+                  />
                 </div>
               </div>
             </div>
