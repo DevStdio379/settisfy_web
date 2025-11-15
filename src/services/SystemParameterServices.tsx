@@ -1,6 +1,13 @@
 import { collection, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./config";
 
+export interface SettlerResource {
+    imageUri: string;
+    title: string;
+    description: string;
+    link: string;
+}
+
 export interface SystemParameter {
     platformFee: number;
     platformFeeIsActive: boolean;
@@ -8,6 +15,7 @@ export interface SystemParameter {
     showAssignSettlerButton: boolean;
     faqLink: string;
     customerSupportLink: string;
+    settlerResources: SettlerResource[];
 }
 
 export const fetchSystemParameters = async (): Promise<SystemParameter> => {
@@ -22,6 +30,7 @@ export const fetchSystemParameters = async (): Promise<SystemParameter> => {
         showAssignSettlerButton: data.showAssignSettlerButton,
         faqLink: data.faqLink,
         customerSupportLink: data.customerSupportLink,
+        settlerResources: data.settlerResources || [],
     };
 }
 

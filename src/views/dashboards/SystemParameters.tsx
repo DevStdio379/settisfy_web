@@ -145,6 +145,121 @@ const SystemParameters = () => {
                 </div>
               </div>
             </div>
+            <h6 className="mt-5">Service Provider Resources</h6>
+            <div className="list-group-item">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h6 className="mb-0">Resource</h6>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => {
+                    const newTip = {
+                      imageUri: '',
+                      title: '',
+                      description: '',
+                      link: '',
+                    }
+                    setParameters(prev => prev ? {
+                      ...prev,
+                      settlerResources: [...(prev.settlerResources || []), newTip]
+                    } : undefined)
+                  }}
+                >
+                  <i className="mdi mdi-plus"></i> Add Tip
+                </button>
+              </div>
+                <div className="row">
+                  {parameters?.settlerResources?.map((tip, index) => (
+                    <div key={index} className="col-12 mb-3">
+                      <div className="border rounded p-3">
+                        <div className="d-flex justify-content-between align-items-start mb-3">
+                          <h6 className="mb-0">Tip #{index + 1}</h6>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => {
+                              setParameters(prev => prev ? {
+                                ...prev,
+                                settlerResources: prev.settlerResources?.filter((_, i) => i !== index)
+                              } : undefined)
+                            }}
+                          >
+                            <i className="fi fi-rr-trash"></i>
+                          </button>
+                        </div>
+                        <div className="row mb-2 align-items-center">
+                          <label className="col-md-3 col-form-label">Image URL</label>
+                          <div className="col-md-9">
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="Enter image URL"
+                              value={tip.imageUri}
+                              onChange={(e) => {
+                                setParameters(prev => prev ? {
+                                  ...prev,
+                                  settlerResources: prev.settlerResources?.map((t, i) => i === index ? { ...t, imageUri: e.target.value } : t)
+                                } : undefined)
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2 align-items-center">
+                          <label className="col-md-3 col-form-label">Title</label>
+                          <div className="col-md-9">
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="Enter title"
+                              value={tip.title}
+                              onChange={(e) => {
+                                setParameters(prev => prev ? {
+                                  ...prev,
+                                  settlerResources: prev.settlerResources?.map((t, i) => i === index ? { ...t, title: e.target.value } : t)
+                                } : undefined)
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-0 align-items-start">
+                          <label className="col-md-3 col-form-label">Description</label>
+                          <div className="col-md-9">
+                            <textarea
+                              className="form-control form-control-sm"
+                              placeholder="Enter description"
+                              rows={2}
+                              value={tip.description}
+                              onChange={(e) => {
+                                setParameters(prev => prev ? {
+                                  ...prev,
+                                  settlerResources: prev.settlerResources?.map((t, i) => i === index ? { ...t, description: e.target.value } : t)
+                                } : undefined)
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="row mb-2 align-items-center">
+                          <label className="col-md-3 col-form-label">Link</label>
+                          <div className="col-md-9">
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              placeholder="Enter link"
+                              value={tip.link ?? ''}
+                              onChange={(e) => {
+                                setParameters(prev => prev ? {
+                                  ...prev,
+                                  settlerResources: prev.settlerResources?.map((t, i) => i === index ? { ...t, link: e.target.value } : t)
+                                } : undefined)
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+            </div>
           </div>
         </Card.Body>
       </Card>
