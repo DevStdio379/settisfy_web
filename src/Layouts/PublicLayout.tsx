@@ -1,10 +1,9 @@
-import { useEffect, Suspense, ReactNode, useState } from 'react'
+import { useEffect, Suspense, ReactNode } from 'react'
 import { ThemeSettings, useThemeContext } from '../common/context'
 import { changeHTMLAttribute } from '../utils'
 import { Button, Stack } from 'react-bootstrap'
 import { PreloaderFull } from '@/components/Misc/Preloader'
 import ThemeCustomizerPublic from './Customizer/CustomizerPublic'
-import SupportLiveChat from './LiveChat/SupportLiveChat'
 import PublicHeader from './Public/PublicHeader'
 import PublicFooter from './Public/PublicFooter'
 
@@ -14,11 +13,6 @@ interface PublicLayoutProps {
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const { settings, updateSettings } = useThemeContext()
-  const [showLiveChat, setShowLiveChat] = useState(false)
-
-  const handleSupportLiveChat = () => {
-    setShowLiveChat(!showLiveChat)
-  }
 
   const handleCustomizer = () => {
     updateSettings({ customizer: ThemeSettings.customizer.show })
@@ -43,10 +37,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
       <Suspense fallback={<div />}>
         <ThemeCustomizerPublic />
-      </Suspense>
-
-      <Suspense fallback={<div />}>
-        <SupportLiveChat show={showLiveChat} />
       </Suspense>
 
       <Stack className="position-fixed z-1" style={{ right: '0', bottom: '50%' }}>

@@ -1,6 +1,5 @@
 import Copyright from '@/components/Misc/Copyright'
 import { Stack } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
 
 const Footer = () => {
   return (

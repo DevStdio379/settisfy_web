@@ -1,13 +1,6 @@
 import { ThemeSettings, useThemeContext } from '@/common'
 import {
-  Activity,
-  Applications,
-  DarkLight,
-  Helpdesk,
-  Languages,
-  Notifications,
   Profile,
-  Search,
   useThemeCustomizer,
 } from '@/components'
 import Logo from '@/components/Common/Logo'

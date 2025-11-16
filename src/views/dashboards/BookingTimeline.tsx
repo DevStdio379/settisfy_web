@@ -1,10 +1,8 @@
 import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton'
-import { Button, Stack, Table } from 'react-bootstrap'
-import type { Booking, BookingWithUsers } from "../../services/BookingServices"
-import { BookingActivityType, fetchBookingById, fetchBookingsWithUsers } from "../../services/BookingServices"
+import type { Booking } from "../../services/BookingServices"
+import { BookingActivityType, fetchBookingById } from "../../services/BookingServices"
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import Avatar from '@/components/UiElements/Base/Avatars/Avatar'
+import { useParams } from 'react-router-dom'
 
 const getReadableType = (type?: BookingActivityType, message?: string) => {
   const map: Record<string, string> = {

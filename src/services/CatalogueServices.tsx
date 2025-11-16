@@ -107,28 +107,7 @@ export const fetchSelectedCatalogue = async (serviceId: string): Promise<Catalog
 export const searchServices = async (queryStr: string): Promise<Catalogue[]> => {
   try {
     if (queryStr.length < 3) return []; // Prevent unnecessary queries for short strings
-
-    const lowerCaseQuery = queryStr.toLowerCase();
     const productList: Catalogue[] = [];
-
-    // Firestore does not support 'contains' search, so we fetch products in a paginated way
-    const serviceSnapshot = await getDocs(collection(db, "catalogue"));
-
-    // Convert Firestore snapshot to a list of products
-    const allServices = serviceSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Catalogue[];
-
-    // 🔍 Efficient filtering (case-insensitive) before returning the results
-    const filteredProducts = allServices
-      .filter(product =>
-        product.isActive && (
-          product.title.toLowerCase().includes(lowerCaseQuery) ||
-          product.description.toLowerCase().includes(lowerCaseQuery) ||
-          product.category.toLowerCase().includes(lowerCaseQuery)
-        )
-      );
 
     // Fetch review counts in parallel to reduce Firestore calls
     // await Promise.all(filteredProducts.map(async product => {

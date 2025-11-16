@@ -2,12 +2,11 @@ import { ThemeSettings, useThemeContext } from '@/common/context'
 import { Preloader, PreloaderFull } from '@/components/Misc/Preloader'
 import { useToggle } from '@/hooks'
 import { changeHTMLAttribute } from '@/utils'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Button, Stack } from 'react-bootstrap'
 import Customizer from '../Customizer/Customizer'
 import Footer from '../Footer'
 import Header from '../Header'
-import SupportLiveChat from '../LiveChat/SupportLiveChat'
 import Navigation from './Navigation'
 
 interface HorizontaLayoutProps {
@@ -17,11 +16,6 @@ interface HorizontaLayoutProps {
 const HorizontalLayout = ({ children }: HorizontaLayoutProps) => {
   const [horizontalDropdownOpen, toggleMenu] = useToggle()
   const { settings, updateSettings } = useThemeContext()
-  const [showLiveChat, setShowLiveChat] = useState(false)
-
-  const handleSupportLiveChat = () => {
-    setShowLiveChat(!showLiveChat)
-  }
 
   const handleCustomizer = () => {
     updateSettings({ customizer: ThemeSettings.customizer.show })
@@ -73,10 +67,6 @@ const HorizontalLayout = ({ children }: HorizontaLayoutProps) => {
 
       <Suspense fallback={<div />}>
         <Customizer />
-      </Suspense>
-
-      <Suspense fallback={<div />}>
-        <SupportLiveChat show={showLiveChat} />
       </Suspense>
 
       <Stack className="position-fixed z-1" style={{ right: '0', bottom: '50%' }}>

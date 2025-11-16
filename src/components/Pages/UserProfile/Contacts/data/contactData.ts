@@ -10,7 +10,6 @@ import avatar9 from '@/assets/images/avatars/9.png'
 import avatar10 from '@/assets/images/avatars/10.png'
 import avatar11 from '@/assets/images/avatars/11.png'
 import avatar12 from '@/assets/images/avatars/12.png'
-import settisfyLogo from '@/assets/images/logos/settisfy-logo.png'
 
 interface contactsType {
   name: string
@@ -22,7 +21,7 @@ interface contactsType {
 
 const Contacts: contactsType[] = [
   {
-    image: settisfyLogo,
+    image: avatar1,
     name: 'Settisfy Admin',
     email: 'della@outlook.com',
     phone: '(587)-987-9632',

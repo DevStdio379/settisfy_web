@@ -1,6 +1,6 @@
 import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton';
 import TitleHelmet from '@/components/Common/TitleHelmet'
-import { fetchSelectedReviews, Review, ReviewWithUsers } from '@/services/ReviewServices';
+import { fetchSelectedReviews, ReviewWithUsers } from '@/services/ReviewServices';
 import { fetchSelectedSettlerService, SettlerService } from '@/services/SettlerServiceServices';
 import { fetchSelectedUser } from '@/services/UserServices';
 import { useEffect, useState } from 'react';

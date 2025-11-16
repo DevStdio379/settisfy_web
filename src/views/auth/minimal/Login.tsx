@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useAuthContext } from '@/common'
 import AuthLayout from '@/Layouts/AuthLayout'
 import TitleHelmet from '@/components/Common/TitleHelmet'
-import { Button, Form, Stack } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 import useLogin from '../useAuth/useLogin'
 import AuthMinmal from './AuthMinmal'
 
@@ -12,7 +12,6 @@ const Login = () => {
   const { loading, login, redirectUrl, isAuthenticated } = useLogin()
   const [email, setEmail] = useState<string>('settisfy@gmail.com')
   const [password, setPassword] = useState<string>('')
-  const [rememberMe, setRememberMe] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [emailError, setEmailError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)

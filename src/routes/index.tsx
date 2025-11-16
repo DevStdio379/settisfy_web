@@ -8,12 +8,10 @@ import BookingDetails from './../views/dashboards/BookingDetails'
 import BookingTimeline from '@/views/dashboards/BookingTimeline'
 import SettlerServices from '@/views/dashboards/SettlerServices'
 import SettlerServiceProfile from '@/views/dashboards/SettlerServiceProfile'
-import Catalogue from '@/views/dashboards/Catalogues'
 import CatalogueDetails from '@/views/dashboards/CatalogueDetails'
 import Catalogues from '@/views/dashboards/Catalogues'
 import Users from '@/views/dashboards/Users'
 import UserDetails from '@/views/dashboards/UserDetails'
-import Parameters from '@/views/dashboards/SystemParameters'
 import SystemParameters from '@/views/dashboards/SystemParameters'
 
 // Dashboards

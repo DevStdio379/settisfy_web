@@ -1,10 +1,9 @@
-import { useEffect, Suspense, ReactNode, useState } from 'react'
+import { useEffect, Suspense, ReactNode } from 'react'
 import { ThemeSettings, useThemeContext } from '../common/context'
 import { changeHTMLAttribute } from '../utils'
 import { Button, Stack } from 'react-bootstrap'
 import { PreloaderFull } from '@/components/Misc/Preloader'
 import ThemeCustomizerPublic from './Customizer/CustomizerPublic'
-import SupportLiveChat from './LiveChat/SupportLiveChat'
 
 interface AuthLayoutProps {
   children?: ReactNode
@@ -12,11 +11,6 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
   const { settings, updateSettings } = useThemeContext()
-  const [showLiveChat, setShowLiveChat] = useState(false)
-
-  const handleSupportLiveChat = () => {
-    setShowLiveChat(!showLiveChat)
-  }
 
   const handleCustomizer = () => {
     updateSettings({ customizer: ThemeSettings.customizer.show })
@@ -37,10 +31,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 
       <Suspense fallback={<div />}>
         <ThemeCustomizerPublic />
-      </Suspense>
-
-      <Suspense fallback={<div />}>
-        <SupportLiveChat show={showLiveChat} />
       </Suspense>
 
       <Stack className="position-fixed z-1" style={{ right: '0', bottom: '50%' }}>

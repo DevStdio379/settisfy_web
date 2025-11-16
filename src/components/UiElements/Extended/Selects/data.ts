@@ -151,10 +151,9 @@ import av7 from '@/assets/images/avatars/7.png'
 import av8 from '@/assets/images/avatars/8.png'
 import av9 from '@/assets/images/avatars/9.png'
 import av10 from '@/assets/images/avatars/10.png'
-import settisfyLogo from '@/assets/images/logos/settisfy-logo.png'
 
 export const CustomImageOptions: OptionType[] = [
-  { value: 'settisfy@example.com', label: 'Settisfy Admin', image: settisfyLogo },
+  { value: 'settisfy@example.com', label: 'Settisfy Admin', image: av1 },
   { value: 'mikaela@example.com', label: 'Mikaela Collins', image: av2 },
   { value: 'timothy@example.com', label: 'Timothy Boyd', image: av3 },
   { value: 'strokes@example.com', label: 'Mark Strokes', image: av4 },

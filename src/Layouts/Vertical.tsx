@@ -1,10 +1,9 @@
 import { Preloader, PreloaderFull } from '@/components/Misc/Preloader'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { Button, Stack } from 'react-bootstrap'
 import { ThemeSettings, useThemeContext } from '../common/context'
 import { useViewport } from '../hooks'
 import { changeHTMLAttribute } from '../utils'
-import SupportLiveChat from './LiveChat/SupportLiveChat'
 
 const Header = React.lazy(() => import('./Header'))
 const Footer = React.lazy(() => import('./Footer'))
@@ -18,11 +17,6 @@ interface VerticalLayoutProps {
 const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   const { width } = useViewport()
   const { settings, updateSidebar, updateSettings } = useThemeContext()
-  const [showLiveChat, setShowLiveChat] = useState(false)
-
-  const handleSupportLiveChat = () => {
-    setShowLiveChat(!showLiveChat)
-  }
 
   const handleCustomizer = () => {
     updateSettings({ customizer: ThemeSettings.customizer.show })
@@ -80,10 +74,6 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
 
       <Suspense fallback={<div />}>
         <Customizer />
-      </Suspense>
-
-      <Suspense fallback={<div />}>
-        <SupportLiveChat show={showLiveChat} />
       </Suspense>
 
       <Stack

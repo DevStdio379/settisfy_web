@@ -2,7 +2,7 @@ import TitleHelmet from '@/components/Common/TitleHelmet'
 import { Card, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Catalogue, createCatalogue, deleteCatalogue, fetchSelectedCatalogue, updateCatalogue } from '@/services/CatalogueServices'
+import { Catalogue, deleteCatalogue, fetchSelectedCatalogue, updateCatalogue } from '@/services/CatalogueServices'
 import { SERVICE_CATEGORIES } from '@/constants/ServiceCategory'
 import PageBreadcrumbButton from '@/components/Common/PageBreadcrumbButton'
 
@@ -107,7 +107,6 @@ const CatalogueDetails = () => {
         await updateCatalogue(id, catalogue);
         alert('Catalogue updated successfully!');
       } else {
-        const newId = await createCatalogue(catalogue);
         alert('New service created successfully!');
         window.location.href = '/dashboards/catalogues';
       }

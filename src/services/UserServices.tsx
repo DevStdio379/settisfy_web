@@ -1,4 +1,4 @@
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import { Address } from "./AddressServices";
 import { Payment } from "./PaymentServices";
 import { db } from "./config";
