@@ -10,8 +10,8 @@ import AuthModern from './AuthModern'
 const LoginModern = () => {
   const { removeSession } = useAuthContext()
   const { loading, login, redirectUrl, isAuthenticated } = useLogin()
-  const [email, setEmail] = useState<string>('admin@email.com')
-  const [password, setPassword] = useState<string>('12345678')
+  const [email, setEmail] = useState<string>('settisfy@gmail.com')
+  const [password, setPassword] = useState<string>('')
   const [rememberMe, setRememberMe] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [emailError, setEmailError] = useState<string | null>(null)
@@ -64,7 +64,7 @@ const LoginModern = () => {
           {isAuthenticated && <Navigate to={redirectUrl} replace />}
           <div className="mb-12">
             <h4 className="fw-bold mb-3">Login to your account</h4>
-            <p className="fs-16 lead">Hey, Enter your details to get login to your account.</p>
+            <p className="fs-16 lead">Admin panel for Settisfy</p>
           </div>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
@@ -102,7 +102,7 @@ const LoginModern = () => {
                 <i className={`fi ${showPassword ? 'fi-rr-eye-crossed' : 'fi-rr-eye'}`}></i>
               </span>
             </Form.Group>
-            <Stack direction="horizontal">
+            {/* <Stack direction="horizontal">
               <Form.Check type="checkbox" id="check-api-checkbox">
                 <Form.Check.Input
                   type="checkbox"
@@ -114,7 +114,7 @@ const LoginModern = () => {
               <Link to="/auth/modern/forgot-password" className="link-primary ms-auto">
                 Forgot password?
               </Link>
-            </Stack>
+            </Stack> */}
             <div className="d-grid gap-2 my-4">
               <Button
                 variant="primary"
@@ -137,7 +137,7 @@ const LoginModern = () => {
                 )}
               </Button>
             </div>
-            <div>
+            {/* <div>
               Don't have an account? <Link to="/auth/modern/register">Create an Account</Link>
             </div>
             <div className="mt-12 mb-6 border-bottom position-relative">
@@ -154,7 +154,7 @@ const LoginModern = () => {
                 <i className="fi fi-brands-facebook"></i>
                 <span className="ms-2">Login with Facebook</span>
               </Button>
-            </div>
+            </div> */}
           </Form>
         </AuthModern>
       </AuthLayout>

@@ -20,9 +20,9 @@ const users: User[] = [
   {
     id: 1,
     username: 'window',
-    email: 'admin@email.com',
-    password: '12345678',
-    name: 'Window',
+    email: 'settisfy@gmail.com',
+    password: 'SETADM125',
+    name: 'Settisfy Admin Panel',
     role: 'Admin',
     token: AUTH_TOKEN,
   },
