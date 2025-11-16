@@ -321,8 +321,8 @@ const BookingDetails = () => {
                                   src={url}
                                   alt={`Payment Evidence ${idx + 1}`}
                                   style={{
-                                    width: '150px',
-                                    height: '150px',
+                                    width: '100px',
+                                    height: '100px',
                                     objectFit: 'cover',
                                     borderRadius: '6px',
                                     border: '1px solid #dee2e6',
@@ -335,6 +335,10 @@ const BookingDetails = () => {
                         ) : (
                           <div className="text-muted">No payment evidence provided</div>
                         )}
+                      </div>
+                      <div className="mt-3">
+                        <label className="text-muted fs-6 fw-bold">Payment Reference Number:</label>
+                        <div className="fw-medium">{booking.paymentReferenceNumber || '-'}</div>
                       </div>
                     </Col>
                   </Row>
@@ -366,7 +370,7 @@ const BookingDetails = () => {
                   ) : null}
                   <h6 className="fw-semibold mb-3">Notes to Service Provider</h6>
                   <div className="form-control" style={{ minHeight: '60px', backgroundColor: '#f8f9fa', cursor: 'default', fontSize: '0.875rem' }}>
-                    {booking.notesToSettler || <span className="text-muted">No notes provided</span>}
+                    {booking?.notesToSettler || <span className="text-muted">No notes provided</span>}
                   </div>
                 </Card.Body>
               </Card>
@@ -456,19 +460,9 @@ const BookingDetails = () => {
                     </div>
                   ) : null}
 
-                  {/* if no completion remark exist */}
-                  {!booking.settlerEvidenceRemark && booking.settlerEvidenceRemark !== '' && (
-                    <div className="form-control" style={{ minHeight: '80px', backgroundColor: '#f8f9fa', cursor: 'default', fontSize: '0.875rem' }}>
-                      {booking.settlerEvidenceRemark || <span className="text-muted">No remark provided</span>}
-                    </div>
-                  )}
-                  {/* if no incompletion report */}
-                  {booking.settlerEvidenceImageUrls.length === 0 && booking.settlerEvidenceRemark === '' && (
-                    <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '200px' }}>
-                      <i className="ri-checkbox-circle-line text-success" style={{ fontSize: '48px' }}></i>
-                      <p className="text-muted mt-2 mb-0">No service completion evidence provided</p>
-                    </div>
-                  )}
+                   <div className="form-control" style={{ minHeight: '60px', backgroundColor: '#f8f9fa', cursor: 'default', fontSize: '0.875rem' }}>
+                    {booking.settlerEvidenceRemark || <span className="text-muted">No completion evidence remark provided</span>}
+                  </div>
                 </Card.Body>
               </Card>
             </Col>

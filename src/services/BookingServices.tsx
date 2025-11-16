@@ -97,6 +97,7 @@ export interface Booking {
   paymentIntentId?: string;
   paymentEvidence?: string[];
   paymentStatus?: string;
+  paymentReferenceNumber?: string;
   notesToSettlerImageUrls?: string[];
   notesToSettler?: string;
   notesToSettlerStatus?: string;
