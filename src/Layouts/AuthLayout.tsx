@@ -3,7 +3,6 @@ import { ThemeSettings, useThemeContext } from '../common/context'
 import { changeHTMLAttribute } from '../utils'
 import { Button, Stack } from 'react-bootstrap'
 import { PreloaderFull } from '@/components/Misc/Preloader'
-import ThemeCustomizerPublic from './Customizer/CustomizerPublic'
 
 interface AuthLayoutProps {
   children?: ReactNode
@@ -27,10 +26,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     <Suspense fallback={<PreloaderFull />}>
       <Suspense fallback={<div />}>
         <div className="wrapper">{children}</div>
-      </Suspense>
-
-      <Suspense fallback={<div />}>
-        <ThemeCustomizerPublic />
       </Suspense>
 
       <Stack className="position-fixed z-1" style={{ right: '0', bottom: '50%' }}>

@@ -30,7 +30,7 @@ const Customizer = () => {
         style={{ height: '4.5rem' }}
       >
         <div>
-          <h5 className="fw-bold mb-1">Preview Settings</h5>
+          <h5 className="fw-bold mb-1">Preview Settings 1</h5>
           <small className="fs-13 fw-normal text-muted">Customize and preview in real time</small>
         </div>
       </Offcanvas.Header>
