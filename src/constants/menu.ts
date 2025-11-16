@@ -23,12 +23,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
     icon: 'fi fi-rr-dashboard',
     children: [
       {
-        key: 'ecommerce',
-        label: 'eCommerce',
-        url: '/',
-        parentKey: 'dashboards',
-      },
-      {
         key: 'bookings',
         label: 'Bookings',
         url: '/dashboards/bookings',
