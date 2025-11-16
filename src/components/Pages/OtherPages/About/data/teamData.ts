@@ -8,7 +8,7 @@ import avatar6 from '@/assets/images/avatars/6.png'
 const teamData = [
   {
     image: avatar1,
-    name: 'Alexandra Della',
+    name: 'Settisfy Admin',
     designation: 'Frontend Developer',
   },
   {

@@ -12,7 +12,7 @@ const EmailTemplateWelcomeMessage = () => {
             <Image src={welcome} fluid alt={welcome} />
           </div>
           <div>
-            <h3 className="fw-bold mb-3">Welcome, Alexandra Della</h3>
+            <h3 className="fw-bold mb-3">Welcome, Settisfy Admin</h3>
             <p className="lead mb-0">
               Lots of people make mistakes while creating paragraphs. Some writers just put
               whitespace in their text in random places.

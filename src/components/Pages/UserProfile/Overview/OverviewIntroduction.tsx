@@ -6,7 +6,7 @@ const OverviewIntroduction = () => {
       <Card.Title className="fw-semibold mb-4">Introduction</Card.Title>
       <dl className="dl-horizontal mb-5">
         <dt>Full Name:</dt>
-        <dd>Alexandra Della</dd>
+        <dd>Settisfy Admin</dd>
         <dt>Company:</dt>
         <dd>WRAPCODERS</dd>
         <dt>Mobile Number:</dt>

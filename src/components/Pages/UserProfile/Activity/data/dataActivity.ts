@@ -29,7 +29,7 @@ const dataActivity = [
     content: `
         <h6 class="fw-semibold mb-1">
             <a href="#!" class="text-primary">
-            Alexandra Della
+            Settisfy Admin
             </a>
             posted a status update
         </h6>
@@ -100,7 +100,7 @@ const dataActivity = [
     content: `
         <h6 class="fw-semibold mb-1">
             <a href="#!" class="text-primary">
-            Alexandra Della
+            Settisfy Admin
             </a>
             posted a status update
         </h6>

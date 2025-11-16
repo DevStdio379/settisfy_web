@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast'
 import { Dropdown } from 'react-bootstrap'
 import { profileDataGroup1, profileDataGroup2, profileDataGroup3 } from './data/profileData'
 import NotificationOffcanvas from './Notifications/NotificationOffcanvas'
-import profilePic from '@/assets/images/avatars/1.png'
+import profilePic from '@/assets/images/settisfy-icon.png'
 import Avatar from './../UiElements/Base/Avatars/Avatar'
 import Status from '../Misc/Status'
 
@@ -64,7 +64,7 @@ const Profile = () => {
           <div className="px-4 py-3 d-flex border-bottom">
             <Avatar type="image" src={profilePic} size="md" shape="2" className="flex-shrink-0" />
             <div className="flex-grow-1 ms-3">
-              <h6 className="text-dark mb-0">Alexandra Della</h6>
+              <h6 className="text-dark mb-0">Settisfy Admin</h6>
               <Status status={status} changeStatus={handleStatusChange} />
             </div>
           </div>

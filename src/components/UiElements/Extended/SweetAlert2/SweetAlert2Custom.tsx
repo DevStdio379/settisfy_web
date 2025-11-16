@@ -53,7 +53,7 @@ const SweetAlert2Custom = () => {
                         <img src="${avatar}" class="rounded-circle img-thumbnail" alt="thumbnail">
                     </div>
                     <div class="mt-4 pt-2">
-                        <h4 class="fw-semibold">Alexandra Della</h4>
+                        <h4 class="fw-semibold">Settisfy Admin</h4>
                         <p class="text-muted mb-0">You have <span class="badge bg-danger-subtle text-danger">25+</span> Notifications</p>
                     </div>
                 </div>`,

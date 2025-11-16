@@ -21,7 +21,7 @@ interface followersType {
 const Followers: followersType[] = [
   {
     image: avatar1,
-    name: 'Alexandra Della',
+    name: 'Settisfy Admin',
     email: 'alex.della@outlook.com',
     isFollowing: true,
   },

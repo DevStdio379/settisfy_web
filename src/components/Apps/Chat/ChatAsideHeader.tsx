@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, Stack } from 'react-bootstrap'
 import Avatar from '@/components/UiElements/Base/Avatars/Avatar'
-import avatar from '@/assets/images/avatars/1.png'
+import avatar from '@/assets/images/settisfy-icon.png'
 import Status from '@/components/Misc/Status'
 
 interface ChatAsideHeaderUserProps {
@@ -40,7 +40,7 @@ const ChatAsideHeaderUser: React.FC<ChatAsideHeaderUserProps> = ({ handleInviteC
       >
         <Avatar type="image" size="md" src={avatar} alt="User Avatar" />
         <div className="mt-3">
-          <h6 className="text-dark mb-0">Alexandra Della</h6>
+          <h6 className="text-dark mb-0">Settisfy Admin</h6>
           <Status status={status} changeStatus={handleStatusChange} />
         </div>
       </Stack>

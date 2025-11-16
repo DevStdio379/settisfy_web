@@ -14,7 +14,6 @@ import Logo from '@/components/Common/Logo'
 import { useViewport } from '@/hooks'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import MegaMenu from './MegaMenu'
 
 type HeaderProps = {
   toggleMenu?: () => void
@@ -128,11 +127,11 @@ const Header = ({ toggleMenu, navOpen }: HeaderProps) => {
                 <span />
               </div>
             </button>
-            <MegaMenu />
+            {/* <MegaMenu /> */}
           </div>
           {/* header-right */}
           <div className="header-right d-flex align-items-center justify-content-center">
-            <Search />
+            {/* <Search />
             <DarkLight />
             <Languages />
             <span className="d-none d-sm-flex">
@@ -140,7 +139,7 @@ const Header = ({ toggleMenu, navOpen }: HeaderProps) => {
               <Helpdesk />
               <Applications />
             </span>
-            <Notifications />
+            <Notifications /> */}
             <Profile />
             <div className="header-btn pe-md-0 d-lg-none" onClick={handleMegaMenuClick}>
               <i className="fi fi-rr-menu-burger"></i>

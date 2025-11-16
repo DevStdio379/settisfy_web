@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="footer-content">
       <Stack direction="horizontal" gap={4} className="footer-inner">
         <Copyright />
-        <Stack
+        {/* <Stack
           direction="horizontal"
           gap={3}
           className="ms-auto d-none d-sm-flex"
@@ -16,7 +16,7 @@ const Footer = () => {
           <Link to="./../docs/index.html">Documentation</Link>
           <Link to="./../docs/changelog.html">Changelog</Link>
           <Link to="./../docs/support.html">Support</Link>
-        </Stack>
+        </Stack> */}
       </Stack>
     </footer>
   )

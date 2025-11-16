@@ -53,7 +53,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         </Button>
       </Stack>
 
-      <Stack
+      {/* <Stack
         className="support-livechat-btn position-fixed z-1"
         style={{ bottom: '2rem', right: '2rem' }}
       >
@@ -71,7 +71,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             <span className="ms-2">Live Chat</span>
           </Button>
         )}
-      </Stack>
+      </Stack> */}
     </Suspense>
   )
 }

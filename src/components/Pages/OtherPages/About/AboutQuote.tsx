@@ -25,7 +25,7 @@ const AboutQuote = () => {
                 className="avatar avatar-md justify-content-center"
               />
             </div>
-            <Link to="#!">Alexandra Della</Link>
+            <Link to="#!">Settisfy Admin</Link>
             <span className="text-muted">CEO, Founder</span>
           </Stack>
         </div>
