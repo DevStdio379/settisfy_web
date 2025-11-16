@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	base: "/", // ✅ IMPORTANT for Netlify
+	base: '/admin-panel/', // ✅ IMPORTANT for Netlify
 	plugins: [react()],
 	define: { "process.env": {} },
 	resolve: {
