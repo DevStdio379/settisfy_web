@@ -68,7 +68,7 @@ const Profile = () => {
               <Status status={status} changeStatus={handleStatusChange} />
             </div>
           </div>
-          <div className="px-2 pt-2">
+          {/* <div className="px-2 pt-2">
             {profileDataGroup1.map(({ redirectTo, icon, label }, idx) => (
               <Link to={redirectTo} className="dropdown-item" key={idx}>
                 <i className={icon}></i>
@@ -80,16 +80,16 @@ const Profile = () => {
               <span className="ms-3">Notification</span>
             </Link>
           </div>
-          <div className="dropdown-divider"></div>
-          <div className="px-2 py-2">
+          <div className="dropdown-divider"></div> */}
+          {/* <div className="px-2 py-2">
             {profileDataGroup2.map(({ redirectTo, icon, label }, idx) => (
               <Link to={redirectTo} className="dropdown-item" key={idx}>
                 <i className={icon}></i>
                 <span className="ms-3">{label}</span>
               </Link>
             ))}
-          </div>
-          <div className="dropdown-divider"></div>
+          </div> 
+          <div className="dropdown-divider"></div> */}
           <div className="px-2 pb-2">
             {profileDataGroup3.map(({ redirectTo, icon, label }, idx) => (
               <Link to={redirectTo} className="dropdown-item text-danger" key={idx}>
